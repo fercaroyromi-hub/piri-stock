@@ -63,7 +63,14 @@ function mejorar(c) {
   let wb = [1, 1, 1];
   if (bn > 30) {
     const mm = (br + bg + bb) / 3;
-    wb = [br, bg, bb].map(s => Math.max(0.9, Math.min(1.12, 1 + (mm / s - 1) * 0.7)));
+    wb = [br, bg, bb].map(s => Math.max(0.86, Math.min(1.18, 1 + (mm / s - 1) * 0.9)));
+  }
+  // si el producto es casi sin color (plateado, blanco, negro, acero), neutralizar del todo el tinte de la luz
+  let sr = 0, sg = 0, sb = 0, sat = 0;
+  for (let i = 0; i < a.length; i += 16) { if (a[i + 3] < 200) continue; const r = a[i] * wb[0], g = a[i + 1] * wb[1], b = a[i + 2] * wb[2]; sr += r; sg += g; sb += b; sat += Math.max(r, g, b) - Math.min(r, g, b); }
+  const tot = sr + sg + sb, cnt = n / 4;
+  if (tot > 0 && sat / Math.max(1, cnt) < 38) {
+    const m3 = tot / 3; wb = wb.map((v, k) => v * Math.max(0.85, Math.min(1.18, m3 / [sr, sg, sb][k])));
   }
   // 2) niveles: estirar negros y blancos (sin quemar)
   const lo0 = Math.min(...H.map(h => percentil(h, n, 0.004))), hi0 = Math.max(...H.map(h => percentil(h, n, 0.996)));
@@ -132,12 +139,38 @@ function limpiarManchas(a, w, h) {
   for (let i = 0; i < W * H; i++) if (lab[i] && sirve[lab[i]]) { const X = i % W, Y = (i / W) | 0; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = X + dx, yy = Y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H) ok[yy * W + xx] = 1; } }
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (!ok[(y / k | 0) * W + (x / k | 0)]) a[(y * w + x) * 4 + 3] = 0;
 }
+// bordes limpios: saca el "halo" del fondo y deja un contorno suave
+function pulirBordes(a, w, h) {
+  const A = new Uint8ClampedArray(w * h);
+  for (let i = 0; i < w * h; i++) { const v = a[i * 4 + 3]; A[i] = v <= 110 ? 0 : v >= 225 ? 255 : (v - 110) * 255 / 115; }
+  // achicar 1 px el contorno (ahí vive el halo oscuro del fondo)
+  const E = new Uint8ClampedArray(w * h);
+  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+    const i = y * w + x; let m = A[i];
+    if (m) { m = Math.min(m, A[i - 1], A[i + 1], A[i - w], A[i + w]); }
+    E[i] = m;
+  }
+  // devolver a los píxeles del borde el color del interior cercano (sin restos del fondo)
+  const R = 3;
+  for (let y = R; y < h - R; y++) for (let x = R; x < w - R; x++) {
+    const i = y * w + x; if (!E[i] || E[i] === 255 && A[i - 2] === 255 && A[i + 2] === 255 && A[i - 2 * w] === 255 && A[i + 2 * w] === 255) continue;
+    let r = 0, g = 0, b = 0, n = 0;
+    for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) { const j = i + dy * w + dx; if (A[j] === 255) { let ok = true; for (const k of [j - 1, j + 1, j - w, j + w]) if (A[k] !== 255) { ok = false; break; } if (ok) { r += a[j * 4]; g += a[j * 4 + 1]; b += a[j * 4 + 2]; n++; } } }
+    if (n) { const p = i * 4, f = 0.65; a[p] = a[p] * (1 - f) + r / n * f; a[p + 1] = a[p + 1] * (1 - f) + g / n * f; a[p + 2] = a[p + 2] * (1 - f) + b / n * f; }
+  }
+  // suavizado leve del contorno
+  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+    const i = y * w + x;
+    a[i * 4 + 3] = (E[i] * 4 + E[i - 1] + E[i + 1] + E[i - w] + E[i + w]) / 8;
+  }
+}
 // caja del producto: limpia restos sueltos del fondo y busca dónde está el producto
 function caja(c) {
   const w = c.width, h = c.height, x = c.getContext('2d', { willReadFrequently: true });
   const d = x.getImageData(0, 0, w, h), a = d.data;
   for (let i = 3; i < a.length; i += 4) if (a[i] < 60) a[i] = 0; // bruma casi transparente → fuera
   limpiarManchas(a, w, h);
+  pulirBordes(a, w, h);
   x.putImageData(d, 0, 0);
   const fil = new Uint32Array(h), col = new Uint32Array(w);
   for (let y = 0; y < h; y++) for (let X = 0; X < w; X++) if (a[(y * w + X) * 4 + 3] > 128) { fil[y]++; col[X]++; }
