@@ -522,7 +522,7 @@ function setTipo(t) { M.tipo = t; if (t !== 'Venta' && M.destino.startsWith('K:'
 function pintarMov() {
   const t = M.tipo;
   $('#movF').innerHTML = `
-  <div class="f"><label>${t === 'Venta' ? 'Qué vendiste' : 'Producto'}</label><select id="mDest" onchange="if(this.value==='NUEVO'){abrirEditar(null,true);return}M.destino=this.value;prevMov()"><option value="">Elegí…</option>${t === 'Venta' ? optsDest(M.destino) : optsProd(M.destino)}${t === 'Entrada' ? '<option value="NUEVO">➕ Producto nuevo…</option>' : ''}</select></div>
+  <div class="f"><label>${t === 'Venta' ? 'Qué vendiste' : 'Producto'}</label><select id="mDest" onchange="if(this.value==='NUEVO'){abrirEditar(null,true);return}M.destino=this.value;pintarColorMov();prevMov()"><option value="">Elegí…</option>${t === 'Venta' ? optsDest(M.destino) : optsProd(M.destino)}${t === 'Entrada' ? '<option value="NUEVO">➕ Producto nuevo…</option>' : ''}</select><div id="mColor"></div></div>
   <div class="f"><label>${t === 'Conteo' ? '¿Cuántas hay en total?' : 'Cantidad'}</label>${stepper('mCant', t === 'Conteo' ? (P(M.destino.slice(2)) || { stock: 0 }).stock : 1)}</div>
   ${t === 'Entrada' ? `<div class="row2"><div class="f"><label>Costo por unidad ($)</label><input id="mCosto" type="number" inputmode="decimal" placeholder="${(P(M.destino.slice(2)) || {}).costo || 'Ej.: 350'}" oninput="prevMov()"></div><div class="f"><label>Total de la compra</label><input id="mTot" disabled value=""></div></div>` : ''}
   ${t === 'Venta' ? `<div class="f"><label>Dónde</label><div class="seg" id="segC">${['Mercado Libre', 'Directa', 'Otro'].map(c => `<button class="${M.canal === c ? 'on' : ''}" onclick="M.canal='${c}';$$('#segC button').forEach(b=>b.classList.toggle('on',b.dataset.c==='${c}'))" data-c="${c}">${c === 'Directa' ? 'Por fuera' : c}</button>`).join('')}</div><div style="font-size:11.5px;color:var(--muted);margin-top:6px">Lo que cargás en Pirí Ventas se descuenta solo, no hace falta cargarlo acá.</div></div>` : ''}
@@ -531,7 +531,40 @@ function pintarMov() {
   ${t === 'Entrada' ? '<button class="add" onclick="abrirFactura()">📷 Mejor cargar desde la foto de la factura</button>' : ''}
   <div class="prev" id="mPrev" hidden></div>
   <button class="btn-main" data-t="Guardar" onclick="guardarMov()">Guardar</button>`;
+  pintarColorMov();
   prevMov();
+}
+// en "Compré" y "Conté": agregar un color nuevo del producto elegido sin salir del movimiento
+function pintarColorMov(abierto) {
+  const box = $('#mColor'); if (!box) return;
+  const d = M.destino || '', p = d.startsWith('P:') ? P(d.slice(2)) : null;
+  if (!p || (M.tipo !== 'Entrada' && M.tipo !== 'Conteo')) { box.innerHTML = ''; return; }
+  if (!p.color) { box.innerHTML = `<button class="add" style="margin-top:8px" onclick="abrirColores('${p.id}')">🎨 Este producto viene en colores</button>`; return; }
+  box.innerHTML = abierto
+    ? `<div class="row2" style="margin-top:8px;align-items:end"><div class="f" style="margin:0"><label>Color nuevo de ${esc(p.nombre)}</label><input id="mColN" placeholder="Ej.: Rojo"></div><button class="btn-main" style="margin:0" data-t="Agregar" id="mColB" onclick="agregarColorMov()">Agregar</button></div>
+       <div style="font-size:11.5px;color:var(--muted);margin-top:5px">Se crea dentro de ${esc(p.nombre)}, con el mismo precio y costo. Después le podés poner la foto.</div>`
+    : `<button class="add" style="margin-top:8px" onclick="pintarColorMov(true);$('#mColN').focus()">🎨 Llegó un color nuevo de ${esc(p.nombre)}</button>`;
+}
+async function agregarColorMov() {
+  const p = P(M.destino.slice(2)), c = ($('#mColN').value || '').replace(/\s+/g, ' ').trim();
+  if (!c) return toast('Escribí el color', true);
+  const ya = S.productos.find(x => x.nombre === p.nombre && (x.color || '').toLowerCase() === c.toLowerCase());
+  if (ya) { M.destino = 'P:' + ya.id; toast('Ese color ya existía: lo elegí'); }
+  else {
+    const b = $('#mColB'); b.disabled = true; b.textContent = 'Agregando…';
+    const cant = $('#mCant') && $('#mCant').value, costo = $('#mCosto') && $('#mCosto').value, nota = $('#mNota') && $('#mNota').value;
+    try {
+      const antes = new Set(S.productos.map(x => x.id));
+      await api('colores', { id: p.id, colores: [c] });
+      const nuevo = S.productos.find(x => !antes.has(x.id) && x.nombre === p.nombre);
+      if (nuevo) M.destino = 'P:' + nuevo.id;
+      pintarMov();
+      if (cant && $('#mCant')) $('#mCant').value = cant; if (costo && $('#mCosto')) $('#mCosto').value = costo; if (nota && $('#mNota')) $('#mNota').value = nota;
+      prevMov(); toast('✓ Color ' + c + ' agregado');
+      return;
+    } catch (e) { toast(e.message, true); b.disabled = false; b.textContent = 'Agregar'; return; }
+  }
+  pintarMov();
 }
 function prevMov() {
   const e = $('#mPrev'); if (!e) return;
