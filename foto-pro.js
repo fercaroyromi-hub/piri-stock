@@ -9,7 +9,7 @@ let _quitar = null;
 async function quitarFondo(blob, avance) {
   if (!_quitar) _quitar = (await import('./vendor/bgremoval.js')).removeBackground;
   return _quitar(blob, {
-    model: 'medium',
+    model: 'small',
     output: { format: 'image/png', quality: 1 },
     progress: (k, hecho, total) => {
       if (!avance) return;
@@ -105,11 +105,39 @@ function enfocar(c, k) {
   x.putImageData(d, 0, 0);
   return c;
 }
+// deja solo las partes grandes (el producto) y borra manchas sueltas del fondo
+function limpiarManchas(a, w, h) {
+  const k = Math.max(1, Math.round(Math.max(w, h) / 320)), W = Math.ceil(w / k), H = Math.ceil(h / k);
+  const m = new Uint8Array(W * H);
+  for (let y = 0; y < h; y += k) for (let x = 0; x < w; x += k) if (a[(y * w + x) * 4 + 3] > 128) m[(y / k | 0) * W + (x / k | 0)] = 1;
+  const lab = new Int32Array(W * H), areas = [0], pila = [];
+  let n = 0;
+  for (let i = 0; i < W * H; i++) {
+    if (!m[i] || lab[i]) continue;
+    n++; let area = 0; pila.push(i); lab[i] = n;
+    while (pila.length) {
+      const j = pila.pop(); area++;
+      const X = j % W, Y = (j / W) | 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
+        const xx = X + dx, yy = Y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+        const q = yy * W + xx; if (m[q] && !lab[q]) { lab[q] = n; pila.push(q); }
+      }
+    }
+    areas.push(area);
+  }
+  if (n < 2) return;
+  const max = Math.max(...areas), sirve = areas.map(v => v >= max * 0.06);
+  // dilatar un poco lo que se queda, para no comer bordes finos (bombillas, tapas)
+  const ok = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) if (lab[i] && sirve[lab[i]]) { const X = i % W, Y = (i / W) | 0; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = X + dx, yy = Y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H) ok[yy * W + xx] = 1; } }
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (!ok[(y / k | 0) * W + (x / k | 0)]) a[(y * w + x) * 4 + 3] = 0;
+}
 // caja del producto: limpia restos sueltos del fondo y busca dónde está el producto
 function caja(c) {
   const w = c.width, h = c.height, x = c.getContext('2d', { willReadFrequently: true });
   const d = x.getImageData(0, 0, w, h), a = d.data;
   for (let i = 3; i < a.length; i += 4) if (a[i] < 60) a[i] = 0; // bruma casi transparente → fuera
+  limpiarManchas(a, w, h);
   x.putImageData(d, 0, 0);
   const fil = new Uint32Array(h), col = new Uint32Array(w);
   for (let y = 0; y < h; y++) for (let X = 0; X < w; X++) if (a[(y * w + X) * 4 + 3] > 128) { fil[y]++; col[X]++; }
@@ -154,7 +182,7 @@ function cuadrada(c) {
  */
 export async function fotoProfesional(file, avance) {
   const im = await cargar(file);
-  const base = achicar(im, 1600);
+  const base = achicar(im, 1024); // la IA trabaja a 1024 px: menos memoria
   avance && avance('Preparando la foto…', null);
   const simple = await aBlob(cuadrada(mejorar(achicar(im, 1600))), 'image/jpeg', 0.9);
   let pro = null, recortada = false;
