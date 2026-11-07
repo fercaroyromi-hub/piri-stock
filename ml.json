@@ -1,25 +1,929 @@
 {
-  "actualizado": "2026-11-07",
-  "nota": "Productos terminados de Mercado Libre que se muestran en el catálogo. Lo arma Claude con la cuenta de Mercado Libre de Pirí.",
-  "items": [
-    {"id":"MLU1330200538","nombre":"Termo y mate Peñarol personalizado","cat":"Sets materos grabados","color":"Negro","precio":1690,"stock":2,"fotos":["https://http2.mlstatic.com/D_782038-MLU109821972952_042026-O.jpg","https://http2.mlstatic.com/D_948270-MLU109823574384_042026-O.jpg","https://http2.mlstatic.com/D_717739-MLU110717767793_042026-O.jpg"]},
-    {"id":"MLU695221581","nombre":"Termo y mate Nacional personalizado · Edición Decano","cat":"Sets materos grabados","color":"Blanco","precio":1690,"stock":1,"fotos":["https://http2.mlstatic.com/D_657948-MLU113212986509_062026-O.jpg","https://http2.mlstatic.com/D_719710-MLU112074280610_062026-O.jpg","https://http2.mlstatic.com/D_809985-MLU112074280612_062026-O.jpg"]},
-    {"id":"MLU706515082","nombre":"Set matero 1300 ml grabado (termo, mate y bombilla)","cat":"Sets materos grabados","color":"","precio":1490,"stock":6,"fotos":["https://http2.mlstatic.com/D_846899-MLU107103804133_022026-O.jpg","https://http2.mlstatic.com/D_948679-MLU107106475841_022026-O.jpg","https://http2.mlstatic.com/D_783931-MLU107104400441_022026-O.jpg"]},
-    {"id":"MLU1449687120","nombre":"Set matero 1300 ml Día del Padre (termo, mate y bombilla)","cat":"Sets materos grabados","color":"Día del Padre","precio":1890,"stock":2,"fotos":["https://http2.mlstatic.com/D_988389-MLU114615455831_072026-O.jpg","https://http2.mlstatic.com/D_839158-MLU113363011536_072026-O.jpg","https://http2.mlstatic.com/D_726368-MLU114613936035_072026-O.jpg"]},
-    {"id":"MLU1449713120","nombre":"Set matero 1300 ml Día del Padre (termo, mate y bombilla)","cat":"Sets materos grabados","color":"Futbolero","precio":1890,"stock":2,"fotos":["https://http2.mlstatic.com/D_910620-MLU114615085267_072026-O.jpg","https://http2.mlstatic.com/D_885614-MLU114614909809_072026-O.jpg"]},
-    {"id":"MLU690812435","nombre":"Set matero 1300 ml regalo para mamá (termo, mate y bombilla)","cat":"Sets materos grabados","color":"Rosado","precio":1890,"stock":3,"fotos":["https://http2.mlstatic.com/D_726891-MLU110190838526_052026-O.jpg","https://http2.mlstatic.com/D_733385-MLU110190362800_052026-O.jpg","https://http2.mlstatic.com/D_826833-MLU111113640181_052026-O.jpg"]},
-    {"id":"MLU690850949","nombre":"Set matero 1300 ml regalo para mamá (termo, mate y bombilla)","cat":"Sets materos grabados","color":"Fucsia","precio":1890,"stock":4,"fotos":["https://http2.mlstatic.com/D_857975-MLU111113908159_052026-O.jpg","https://http2.mlstatic.com/D_777105-MLU111113610257_052026-O.jpg"]},
-    {"id":"MLU694250891","nombre":"Set matero termo con asa y mate con nombre","cat":"Sets materos grabados","color":"Blanco","precio":1690,"stock":2,"fotos":["https://http2.mlstatic.com/D_677406-MLU112539236825_052026-O.jpg","https://http2.mlstatic.com/D_816925-MLU112538737473_052026-O.jpg","https://http2.mlstatic.com/D_719216-MLU112538589891_052026-O.jpg"]},
-    {"id":"MLU1130509906","nombre":"Mate Peñarol 260 ml Campeón del Siglo con nombre","cat":"Mates grabados","color":"Negro","precio":799,"stock":11,"fotos":["https://http2.mlstatic.com/D_928834-MLU107902926575_032026-O.jpg","https://http2.mlstatic.com/D_889185-MLU107201880402_032026-O.jpg","https://http2.mlstatic.com/D_774049-MLU107903310947_032026-O.jpg"]},
-    {"id":"MLU1291375424","nombre":"Mate Nacional 260 ml grabado con nombre","cat":"Mates grabados","color":"Blanco","precio":799,"stock":1,"fotos":["https://http2.mlstatic.com/D_993390-MLU109281399486_042026-O.jpg","https://http2.mlstatic.com/D_952392-MLU109282077392_042026-O.jpg","https://http2.mlstatic.com/D_753949-MLU109283328344_042026-O.jpg"]},
-    {"id":"MLU1047196334","nombre":"Vaso térmico 900 ml con nombre grabado","cat":"Vasos grabados","color":"","precio":590,"stock":12,"fotos":["https://http2.mlstatic.com/D_934529-MLU116635369312_092026-O.jpg","https://http2.mlstatic.com/D_761810-MLU110856707361_042026-O.jpg","https://http2.mlstatic.com/D_720132-MLU109953116264_042026-O.jpg"]},
-    {"id":"MLU1070745894","nombre":"Vaso térmico Peñarol Edición Full","cat":"Vasos grabados","color":"Negro","precio":1390,"stock":2,"fotos":["https://http2.mlstatic.com/D_897985-MLU118148434669_092026-O.jpg","https://http2.mlstatic.com/D_812822-MLU106760408428_022026-O.jpg","https://http2.mlstatic.com/D_883915-MLU106761108746_022026-O.jpg"]},
-    {"id":"MLU964809144","nombre":"Vaso térmico 1300 ml con nombre grabado","cat":"Vasos grabados","color":"","precio":990,"stock":20,"fotos":["https://http2.mlstatic.com/D_969571-MLU99982741989_112025-O.jpg","https://http2.mlstatic.com/D_717568-MLU99982742015_112025-O.jpg","https://http2.mlstatic.com/D_933597-MLU99498516586_112025-O.jpg"]},
-    {"id":"MLU969623086","nombre":"Lapicera Elegance con estuche de madera grabado","cat":"Lapiceras con estuche","color":"Plateada","precio":749,"stock":13,"fotos":["https://http2.mlstatic.com/D_795789-MLU118148937515_092026-O.jpg","https://http2.mlstatic.com/D_713893-MLU99993616401_112025-O.jpg","https://http2.mlstatic.com/D_950422-MLU99993016107_112025-O.jpg"]},
-    {"id":"MLU1026663932","nombre":"Lapicera Elegance con estuche de madera grabado","cat":"Lapiceras con estuche","color":"Plateada con dorado","precio":990,"stock":35,"fotos":["https://http2.mlstatic.com/D_795789-MLU118148937515_092026-O.jpg","https://http2.mlstatic.com/D_645104-MLU111868908673_052026-O.jpg"]},
-    {"id":"MLU1096421926","nombre":"Set lapicera metal con estuche MDF blanco grabado","cat":"Lapiceras con estuche","color":"Plateada","precio":1099,"stock":21,"fotos":["https://http2.mlstatic.com/D_706951-MLU118165154925_092026-O.jpg","https://http2.mlstatic.com/D_977025-MLU106907364680_022026-O.jpg","https://http2.mlstatic.com/D_988487-MLU107585984463_022026-O.jpg"]},
-    {"id":"MLU660844143","nombre":"Set lapicera metal con estuche MDF blanco grabado","cat":"Lapiceras con estuche","color":"Plateada con dorado","precio":1099,"stock":6,"fotos":["https://http2.mlstatic.com/D_706951-MLU118165154925_092026-O.jpg","https://http2.mlstatic.com/D_765679-MLU107586965651_022026-O.jpg"]},
-    {"id":"MLU694814791","nombre":"Lapicera de bambú grabada con estuche","cat":"Regalos en bambú","color":"","precio":350,"stock":35,"fotos":["https://http2.mlstatic.com/D_843787-MLU116842186716_092026-O.jpg","https://http2.mlstatic.com/D_957388-MLU113204375755_062026-O.jpg","https://http2.mlstatic.com/D_785699-MLU113201541673_062026-O.jpg"]},
-    {"id":"MLU654390045","nombre":"Set de bambú lapicera + lápiz grabados con caja","cat":"Regalos en bambú","color":"","precio":450,"stock":60,"fotos":["https://http2.mlstatic.com/D_887223-MLU116841630358_092026-O.jpg","https://http2.mlstatic.com/D_836673-MLU103350735999_012026-O.jpg","https://http2.mlstatic.com/D_858337-MLU103349734277_012026-O.jpg"]}
-  ]
+ "actualizado": "2026-11-07",
+ "categorias": [
+  "Sets materos",
+  "Termos grabados",
+  "Mates grabados",
+  "Vasos térmicos",
+  "Lapiceras con estuche",
+  "Regalos en bambú",
+  "Asado",
+  "Cajas y regalos",
+  "Cuadros y decoración",
+  "Caravanas de madera",
+  "Bases para torta con tu logo",
+  "Souvenirs y Navidad"
+ ],
+ "items": [
+  {
+   "id": "MLU1330200538",
+   "cat": "Sets materos",
+   "nombre": "Termo y mate Peñarol personalizado",
+   "color": "",
+   "precio": 1690,
+   "stock": 2,
+   "fotos": [
+    "https://http2.mlstatic.com/D_782038-MLU109821972952_042026-O.jpg",
+    "https://http2.mlstatic.com/D_948270-MLU109823574384_042026-O.jpg",
+    "https://http2.mlstatic.com/D_717739-MLU110717767793_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU695221581",
+   "cat": "Sets materos",
+   "nombre": "Termo y mate Nacional personalizado · Edición Decano",
+   "color": "",
+   "precio": 1690,
+   "stock": 1,
+   "fotos": [
+    "https://http2.mlstatic.com/D_657948-MLU113212986509_062026-O.jpg",
+    "https://http2.mlstatic.com/D_719710-MLU112074280610_062026-O.jpg",
+    "https://http2.mlstatic.com/D_809985-MLU112074280612_062026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU694250891",
+   "cat": "Sets materos",
+   "nombre": "Set matero: termo con asa y mate con nombre",
+   "color": "",
+   "precio": 1690,
+   "stock": 2,
+   "fotos": [
+    "https://http2.mlstatic.com/D_677406-MLU112539236825_052026-O.jpg",
+    "https://http2.mlstatic.com/D_816925-MLU112538737473_052026-O.jpg",
+    "https://http2.mlstatic.com/D_719216-MLU112538589891_052026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU706515082",
+   "cat": "Sets materos",
+   "nombre": "Set matero 1300 ml: termo, mate y bombilla grabados",
+   "color": "",
+   "precio": 1490,
+   "stock": 6,
+   "fotos": [
+    "https://http2.mlstatic.com/D_846899-MLU107103804133_022026-O.jpg",
+    "https://http2.mlstatic.com/D_948679-MLU107106475841_022026-O.jpg",
+    "https://http2.mlstatic.com/D_783931-MLU107104400441_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1449687120",
+   "cat": "Sets materos",
+   "nombre": "Set matero Día del Padre 1300 ml: termo, mate y bombilla",
+   "color": "Día del Padre",
+   "precio": 1890,
+   "stock": 2,
+   "fotos": [
+    "https://http2.mlstatic.com/D_988389-MLU114615455831_072026-O.jpg",
+    "https://http2.mlstatic.com/D_839158-MLU113363011536_072026-O.jpg",
+    "https://http2.mlstatic.com/D_726368-MLU114613936035_072026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1449713120",
+   "cat": "Sets materos",
+   "nombre": "Set matero Día del Padre 1300 ml: termo, mate y bombilla",
+   "color": "Futbolero Peñarol",
+   "precio": 1890,
+   "stock": 2,
+   "fotos": [
+    "https://http2.mlstatic.com/D_816022-MLU114615710721_072026-O.jpg",
+    "https://http2.mlstatic.com/D_927249-MLU113364095910_072026-O.jpg",
+    "https://http2.mlstatic.com/D_814863-MLU114616531683_072026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU690812435",
+   "cat": "Sets materos",
+   "nombre": "Set matero para mamá 1300 ml: termo, mate y bombilla",
+   "color": "Rosado",
+   "precio": 1890,
+   "stock": 3,
+   "fotos": [
+    "https://http2.mlstatic.com/D_726891-MLU110190838526_052026-O.jpg",
+    "https://http2.mlstatic.com/D_733385-MLU110190362800_052026-O.jpg",
+    "https://http2.mlstatic.com/D_826833-MLU111113640181_052026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU690850949",
+   "cat": "Sets materos",
+   "nombre": "Set matero para mamá 1300 ml: termo, mate y bombilla",
+   "color": "Fucsia",
+   "precio": 1890,
+   "stock": 4,
+   "fotos": [
+    "https://http2.mlstatic.com/D_745232-MLU110190512786_052026-O.jpg",
+    "https://http2.mlstatic.com/D_927746-MLU111113639719_052026-O.jpg",
+    "https://http2.mlstatic.com/D_875391-MLU111111856459_052026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU690851979",
+   "cat": "Termos grabados",
+   "nombre": "Termo 1 L personalizado",
+   "color": "Azul",
+   "precio": 1290,
+   "stock": 1,
+   "fotos": [
+    "https://http2.mlstatic.com/D_694502-MLU118164978267_092026-O.jpg",
+    "https://http2.mlstatic.com/D_667364-MLU111116085917_052026-O.jpg",
+    "https://http2.mlstatic.com/D_842171-MLU110194797556_052026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU690851943",
+   "cat": "Termos grabados",
+   "nombre": "Termo 750 ml personalizado",
+   "color": "Rosa claro",
+   "precio": 1200,
+   "stock": 1,
+   "fotos": [
+    "https://http2.mlstatic.com/D_721365-MLU116634898832_092026-O.jpg",
+    "https://http2.mlstatic.com/D_785058-MLU111116699413_052026-O.jpg",
+    "https://http2.mlstatic.com/D_644486-MLU111116015889_052026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU690839217",
+   "cat": "Termos grabados",
+   "nombre": "Termo 750 ml personalizado",
+   "color": "Verde agua",
+   "precio": 1200,
+   "stock": 1,
+   "fotos": [
+    "https://http2.mlstatic.com/D_705459-MLU116651812544_092026-O.jpg",
+    "https://http2.mlstatic.com/D_952545-MLU110194136044_052026-O.jpg",
+    "https://http2.mlstatic.com/D_662407-MLU111116700385_052026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1130509906",
+   "cat": "Mates grabados",
+   "nombre": "Mate Peñarol 260 ml Campeón del Siglo con nombre",
+   "color": "",
+   "precio": 799,
+   "stock": 11,
+   "fotos": [
+    "https://http2.mlstatic.com/D_928834-MLU107902926575_032026-O.jpg",
+    "https://http2.mlstatic.com/D_889185-MLU107201880402_032026-O.jpg",
+    "https://http2.mlstatic.com/D_774049-MLU107903310947_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1291375424",
+   "cat": "Mates grabados",
+   "nombre": "Mate Nacional 260 ml grabado con nombre",
+   "color": "",
+   "precio": 799,
+   "stock": 1,
+   "fotos": [
+    "https://http2.mlstatic.com/D_993390-MLU109281399486_042026-O.jpg",
+    "https://http2.mlstatic.com/D_952392-MLU109282077392_042026-O.jpg",
+    "https://http2.mlstatic.com/D_753949-MLU109283328344_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU968844922",
+   "cat": "Mates grabados",
+   "nombre": "Mate térmico de acero grabado premium",
+   "color": "",
+   "precio": 750,
+   "stock": 107,
+   "fotos": [
+    "https://http2.mlstatic.com/D_792430-MLU99987874455_112025-O.jpg",
+    "https://http2.mlstatic.com/D_894767-MLU99503783606_112025-O.jpg",
+    "https://http2.mlstatic.com/D_749553-MLU99503784676_112025-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1047196334",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico 900 ml con nombre grabado",
+   "color": "",
+   "precio": 590,
+   "stock": 12,
+   "fotos": [
+    "https://http2.mlstatic.com/D_934529-MLU116635369312_092026-O.jpg",
+    "https://http2.mlstatic.com/D_761810-MLU110856707361_042026-O.jpg",
+    "https://http2.mlstatic.com/D_720132-MLU109953116264_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU697033553",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico 900 ml tapa 2 en 1 con pico cebador",
+   "color": "Negro",
+   "precio": 890,
+   "stock": 1,
+   "fotos": [
+    "https://http2.mlstatic.com/D_870185-MLU114724574243_072026-O.jpg",
+    "https://http2.mlstatic.com/D_918083-MLU114725467169_072026-O.jpg",
+    "https://http2.mlstatic.com/D_822561-MLU114724991311_072026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1070745894",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico Peñarol Edición Full",
+   "color": "",
+   "precio": 1390,
+   "stock": 2,
+   "fotos": [
+    "https://http2.mlstatic.com/D_897985-MLU118148434669_092026-O.jpg",
+    "https://http2.mlstatic.com/D_812822-MLU106760408428_022026-O.jpg",
+    "https://http2.mlstatic.com/D_883915-MLU106761108746_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1279933790",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico 900 ml One Piece Luffy",
+   "color": "",
+   "precio": 799,
+   "stock": 3,
+   "fotos": [
+    "https://http2.mlstatic.com/D_932616-MLU116634485584_092026-O.jpg",
+    "https://http2.mlstatic.com/D_759398-MLU109177631038_042026-O.jpg",
+    "https://http2.mlstatic.com/D_802115-MLU109179677352_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU694796867",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico Uruguay Mundial 2026 · 800 ml",
+   "color": "Celeste",
+   "precio": 1099,
+   "stock": 3,
+   "fotos": [
+    "https://http2.mlstatic.com/D_896964-MLU116650930884_092026-O.jpg",
+    "https://http2.mlstatic.com/D_688850-MLU111786267398_062026-O.jpg",
+    "https://http2.mlstatic.com/D_806657-MLU112884683385_062026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU964809144",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico 1300 ml personalizado",
+   "color": "",
+   "precio": 990,
+   "stock": 20,
+   "fotos": [
+    "https://http2.mlstatic.com/D_969571-MLU99982741989_112025-O.jpg",
+    "https://http2.mlstatic.com/D_717568-MLU99982742015_112025-O.jpg",
+    "https://http2.mlstatic.com/D_933597-MLU99498516586_112025-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU672119387",
+   "cat": "Lapiceras con estuche",
+   "nombre": "Lapicera Elegance con estuche de madera grabado",
+   "color": "Plateada",
+   "precio": 749,
+   "stock": 13,
+   "fotos": [
+    "https://http2.mlstatic.com/D_731767-MLU116635369620_092026-O.jpg",
+    "https://http2.mlstatic.com/D_831279-MLU108763392305_032026-O.jpg",
+    "https://http2.mlstatic.com/D_625224-MLU108764099925_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU969623086",
+   "cat": "Lapiceras con estuche",
+   "nombre": "Lapicera Elegance con estuche de madera grabado",
+   "color": "Madera",
+   "precio": 749,
+   "stock": 22,
+   "fotos": [
+    "https://http2.mlstatic.com/D_795789-MLU118148937515_092026-O.jpg",
+    "https://http2.mlstatic.com/D_713893-MLU99993616401_112025-O.jpg",
+    "https://http2.mlstatic.com/D_950422-MLU99993016107_112025-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1509028092",
+   "cat": "Lapiceras con estuche",
+   "nombre": "Lapicera Elegance con estuche de madera grabado",
+   "color": "Estuche madera negra",
+   "precio": 989,
+   "stock": 9,
+   "fotos": [
+    "https://http2.mlstatic.com/D_802573-MLU116764372662_092026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1026663932",
+   "cat": "Lapiceras con estuche",
+   "nombre": "Set de 2 lapiceras Elegance con estuche de madera grabado",
+   "color": "Plateada + dorada",
+   "precio": 990,
+   "stock": 35,
+   "fotos": [
+    "https://http2.mlstatic.com/D_636759-MLU116635339642_092026-O.jpg",
+    "https://http2.mlstatic.com/D_644512-MLU103495428216_012026-O.jpg",
+    "https://http2.mlstatic.com/D_675824-MLU103494100754_012026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1096421926",
+   "cat": "Lapiceras con estuche",
+   "nombre": "Lapicera metal con estuche MDF blanco grabado",
+   "color": "Plateada",
+   "precio": 1099,
+   "stock": 21,
+   "fotos": [
+    "https://http2.mlstatic.com/D_706951-MLU118165154925_092026-O.jpg",
+    "https://http2.mlstatic.com/D_977025-MLU106907364680_022026-O.jpg",
+    "https://http2.mlstatic.com/D_988487-MLU107585984463_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU660844143",
+   "cat": "Lapiceras con estuche",
+   "nombre": "Lapicera metal con estuche MDF blanco grabado",
+   "color": "Plateada con dorado",
+   "precio": 1099,
+   "stock": 6,
+   "fotos": [
+    "https://http2.mlstatic.com/D_911664-MLU116634429404_092026-O.jpg",
+    "https://http2.mlstatic.com/D_766795-MLU106906800894_022026-O.jpg",
+    "https://http2.mlstatic.com/D_925105-MLU107585862259_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU694814791",
+   "cat": "Regalos en bambú",
+   "nombre": "Lapicera de bambú grabada con estuche",
+   "color": "",
+   "precio": 350,
+   "stock": 35,
+   "fotos": [
+    "https://http2.mlstatic.com/D_843787-MLU116842186716_092026-O.jpg",
+    "https://http2.mlstatic.com/D_957388-MLU113204375755_062026-O.jpg",
+    "https://http2.mlstatic.com/D_785699-MLU113201541673_062026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU654390045",
+   "cat": "Regalos en bambú",
+   "nombre": "Set de bambú: lapicera + lápiz grabados con caja",
+   "color": "",
+   "precio": 450,
+   "stock": 60,
+   "fotos": [
+    "https://http2.mlstatic.com/D_887223-MLU116841630358_092026-O.jpg",
+    "https://http2.mlstatic.com/D_836673-MLU103350735999_012026-O.jpg",
+    "https://http2.mlstatic.com/D_858337-MLU103349734277_012026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU696139385",
+   "cat": "Asado",
+   "nombre": "Tabla de asado de bambú personalizada 25 cm",
+   "color": "",
+   "precio": 590,
+   "stock": 5,
+   "fotos": [
+    "https://http2.mlstatic.com/D_734977-MLU112810021782_072026-O.jpg",
+    "https://http2.mlstatic.com/D_932063-MLU114007057343_072026-O.jpg",
+    "https://http2.mlstatic.com/D_837636-MLU114007557615_072026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU696224187",
+   "cat": "Asado",
+   "nombre": "Kit parrillero: tabla, cubiertos Tramontina y bolsa",
+   "color": "",
+   "precio": 1200,
+   "stock": 6,
+   "fotos": [
+    "https://http2.mlstatic.com/D_734099-MLU112932171300_072026-O.jpg",
+    "https://http2.mlstatic.com/D_684459-MLU114140163839_072026-O.jpg",
+    "https://http2.mlstatic.com/D_644114-MLU112932171840_072026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069535976",
+   "cat": "Cajas y regalos",
+   "nombre": "Caja para tejedoras personalizada",
+   "color": "17,5 cm",
+   "precio": 990,
+   "stock": 10,
+   "fotos": [
+    "https://http2.mlstatic.com/D_741384-MLU107374337389_022026-O.jpg",
+    "https://http2.mlstatic.com/D_809720-MLU106710369488_022026-O.jpg",
+    "https://http2.mlstatic.com/D_832919-MLU107374364417_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU693724391",
+   "cat": "Cajas y regalos",
+   "nombre": "Caja para tejedoras personalizada",
+   "color": "40 cm",
+   "precio": 1990,
+   "stock": 5,
+   "fotos": [
+    "https://http2.mlstatic.com/D_807228-MLU111855683727_052026-O.jpg",
+    "https://http2.mlstatic.com/D_667486-MLU111855624379_052026-O.jpg",
+    "https://http2.mlstatic.com/D_953986-MLU111857881643_052026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069381296",
+   "cat": "Cajas y regalos",
+   "nombre": "Caja de té de madera 6 divisiones personalizada",
+   "color": "",
+   "precio": 550,
+   "stock": 23,
+   "fotos": [
+    "https://http2.mlstatic.com/D_671804-MLU107299369137_022026-O.jpg",
+    "https://http2.mlstatic.com/D_943911-MLU106644881296_022026-O.jpg",
+    "https://http2.mlstatic.com/D_700956-MLU107299338687_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU656716215",
+   "cat": "Cajas y regalos",
+   "nombre": "Caja tocadiscos con tu canción de Spotify · San Valentín",
+   "color": "",
+   "precio": 990,
+   "stock": 9,
+   "fotos": [
+    "https://http2.mlstatic.com/D_865594-MLU106060076558_022026-O.jpg",
+    "https://http2.mlstatic.com/D_840808-MLU106059633416_022026-O.jpg",
+    "https://http2.mlstatic.com/D_849471-MLU106677111209_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1336070632",
+   "cat": "Cajas y regalos",
+   "nombre": "Caja tocadiscos con tu canción · Día de la Madre",
+   "color": "",
+   "precio": 990,
+   "stock": 2,
+   "fotos": [
+    "https://http2.mlstatic.com/D_659642-MLU110857782231_042026-O.jpg",
+    "https://http2.mlstatic.com/D_642587-MLU109953862626_042026-O.jpg",
+    "https://http2.mlstatic.com/D_989977-MLU110857842443_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU696147547",
+   "cat": "Cajas y regalos",
+   "nombre": "Caja sorpresa desplegable Día del Padre",
+   "color": "",
+   "precio": 690,
+   "stock": 5,
+   "fotos": [
+    "https://http2.mlstatic.com/D_797810-MLU114012173753_072026-O.jpg",
+    "https://http2.mlstatic.com/D_853617-MLU114014009807_072026-O.jpg",
+    "https://http2.mlstatic.com/D_798522-MLU114012794105_072026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1044073780",
+   "cat": "Cuadros y decoración",
+   "nombre": "Cuadro escudo Peñarol con nombre",
+   "color": "",
+   "precio": 990,
+   "stock": 97,
+   "fotos": [
+    "https://http2.mlstatic.com/D_603653-MLU106017526451_012026-O.jpg",
+    "https://http2.mlstatic.com/D_879594-MLU106017447605_012026-O.jpg",
+    "https://http2.mlstatic.com/D_912283-MLU106017357863_012026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1044112892",
+   "cat": "Cuadros y decoración",
+   "nombre": "Cuadro escudo Nacional con nombre",
+   "color": "Grande",
+   "precio": 990,
+   "stock": 50,
+   "fotos": [
+    "https://http2.mlstatic.com/D_614525-MLA105423934088_012026-O.jpg",
+    "https://http2.mlstatic.com/D_785282-MLU106017493017_012026-O.jpg",
+    "https://http2.mlstatic.com/D_662661-MLU106017552915_012026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1442716458",
+   "cat": "Cuadros y decoración",
+   "nombre": "Cuadro escudo Nacional con nombre",
+   "color": "20 cm",
+   "precio": 500,
+   "stock": 16,
+   "fotos": [
+    "https://http2.mlstatic.com/D_799692-MLU113662932277_062026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069833522",
+   "cat": "Cuadros y decoración",
+   "nombre": "Aro decorativo con nombre 40x40",
+   "color": "Natural",
+   "precio": 450,
+   "stock": 10,
+   "fotos": [
+    "https://http2.mlstatic.com/D_770721-MLU107373139387_022026-O.jpg",
+    "https://http2.mlstatic.com/D_750060-MLU107373139401_022026-O.jpg",
+    "https://http2.mlstatic.com/D_738134-MLU106709611460_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU703288953",
+   "cat": "Cuadros y decoración",
+   "nombre": "Aro decorativo con nombre 40x40",
+   "color": "Pintado",
+   "precio": 550,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_826973-MLU117370038963_092026-O.jpg",
+    "https://http2.mlstatic.com/D_616669-MLU117370980347_092026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU682126509",
+   "cat": "Cuadros y decoración",
+   "nombre": "Cartel infantil con nombre en relieve",
+   "color": "",
+   "precio": 1490,
+   "stock": 1,
+   "fotos": [
+    "https://http2.mlstatic.com/D_678086-MLU109983791385_042026-O.jpg",
+    "https://http2.mlstatic.com/D_662431-MLU109983139993_042026-O.jpg",
+    "https://http2.mlstatic.com/D_817103-MLU109142232438_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU659790525",
+   "cat": "Cuadros y decoración",
+   "nombre": "Cuadro caballo 40x40",
+   "color": "Negro",
+   "precio": 499,
+   "stock": 20,
+   "fotos": [
+    "https://http2.mlstatic.com/D_959196-MLU107123299791_022026-O.jpg",
+    "https://http2.mlstatic.com/D_604918-MLU107123922455_022026-O.jpg",
+    "https://http2.mlstatic.com/D_947833-MLU107123299737_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069833606",
+   "cat": "Cuadros y decoración",
+   "nombre": "Mandala 3D multicapa 60x40 + botella térmica de regalo",
+   "color": "",
+   "precio": 3290,
+   "stock": 5,
+   "fotos": [
+    "https://http2.mlstatic.com/D_683436-MLU106711740476_022026-O.jpg",
+    "https://http2.mlstatic.com/D_832756-MLU107376006973_022026-O.jpg",
+    "https://http2.mlstatic.com/D_860453-MLU107376006881_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU672124055",
+   "cat": "Cuadros y decoración",
+   "nombre": "Calendario perpetuo blanco con dorado",
+   "color": "",
+   "precio": 590,
+   "stock": 3,
+   "fotos": [
+    "https://http2.mlstatic.com/D_848680-MLU118147990355_092026-O.jpg",
+    "https://http2.mlstatic.com/D_971512-MLU107999924898_032026-O.jpg",
+    "https://http2.mlstatic.com/D_961024-MLU108766828805_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1333214412",
+   "cat": "Cuadros y decoración",
+   "nombre": "Calendario perpetuo para mamá",
+   "color": "Círculo: “Hoy siembro pensamientos de amor”",
+   "precio": 590,
+   "stock": 8,
+   "fotos": [
+    "https://http2.mlstatic.com/D_657100-MLU116635341150_092026-O.jpg",
+    "https://http2.mlstatic.com/D_924997-MLU109903741756_042026-O.jpg",
+    "https://http2.mlstatic.com/D_678089-MLU110806796533_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1333188422",
+   "cat": "Cuadros y decoración",
+   "nombre": "Calendario perpetuo para mamá",
+   "color": "Corazón: “Tu amor llena cada uno de mis días”",
+   "precio": 590,
+   "stock": 10,
+   "fotos": [
+    "https://http2.mlstatic.com/D_917728-MLU110805836615_042026-O.jpg",
+    "https://http2.mlstatic.com/D_856879-MLU110805597639_042026-O.jpg",
+    "https://http2.mlstatic.com/D_803678-MLU109902309388_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU672141523",
+   "cat": "Cuadros y decoración",
+   "nombre": "Porta sahumerio de madera",
+   "color": "Mano de Fátima",
+   "precio": 329,
+   "stock": 9,
+   "fotos": [
+    "https://http2.mlstatic.com/D_824309-MLU108763708219_032026-O.jpg",
+    "https://http2.mlstatic.com/D_991168-MLU107996047294_032026-O.jpg",
+    "https://http2.mlstatic.com/D_980384-MLU107996965094_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU672141527",
+   "cat": "Cuadros y decoración",
+   "nombre": "Porta sahumerio de madera",
+   "color": "Niño monje",
+   "precio": 329,
+   "stock": 10,
+   "fotos": [
+    "https://http2.mlstatic.com/D_606269-MLU107997056196_032026-O.jpg",
+    "https://http2.mlstatic.com/D_752563-MLU107997617726_032026-O.jpg",
+    "https://http2.mlstatic.com/D_702150-MLU107996966540_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU672141525",
+   "cat": "Cuadros y decoración",
+   "nombre": "Porta sahumerio de madera",
+   "color": "Cristales",
+   "precio": 329,
+   "stock": 10,
+   "fotos": [
+    "https://http2.mlstatic.com/D_850878-MLU107996047700_032026-O.jpg",
+    "https://http2.mlstatic.com/D_870602-MLU107996965442_032026-O.jpg",
+    "https://http2.mlstatic.com/D_728378-MLU108763708453_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU672119199",
+   "cat": "Cuadros y decoración",
+   "nombre": "Porta sahumerio de madera",
+   "color": "Meditación",
+   "precio": 329,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_983506-MLU107996964674_032026-O.jpg",
+    "https://http2.mlstatic.com/D_662045-MLU108763707661_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1217692328",
+   "cat": "Cuadros y decoración",
+   "nombre": "Porta sahumerio de madera",
+   "color": "Luna y gato",
+   "precio": 329,
+   "stock": 10,
+   "fotos": [
+    "https://http2.mlstatic.com/D_789036-MLU108763707991_032026-O.jpg",
+    "https://http2.mlstatic.com/D_907447-MLU107997616114_032026-O.jpg",
+    "https://http2.mlstatic.com/D_669466-MLU107996964994_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1217705010",
+   "cat": "Cuadros y decoración",
+   "nombre": "Porta sahumerio de madera",
+   "color": "Pluma",
+   "precio": 329,
+   "stock": 10,
+   "fotos": [
+    "https://http2.mlstatic.com/D_795506-MLU107996995780_032026-O.jpg",
+    "https://http2.mlstatic.com/D_659893-MLU107996965710_032026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU659928447",
+   "cat": "Cuadros y decoración",
+   "nombre": "Organizador de escritorio y mesa de luz",
+   "color": "",
+   "precio": 590,
+   "stock": 25,
+   "fotos": [
+    "https://http2.mlstatic.com/D_881777-MLU116634485708_092026-O.jpg",
+    "https://http2.mlstatic.com/D_695456-MLU107300745813_022026-O.jpg",
+    "https://http2.mlstatic.com/D_777117-MLU107300745815_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU996050810",
+   "cat": "Cuadros y decoración",
+   "nombre": "Soporte de celular de madera y cuero",
+   "color": "",
+   "precio": 550,
+   "stock": 89,
+   "fotos": [
+    "https://http2.mlstatic.com/D_976074-MLU101471394685_122025-O.jpg",
+    "https://http2.mlstatic.com/D_909296-MLU101470086845_122025-O.jpg",
+    "https://http2.mlstatic.com/D_749252-MLU105823107660_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1064844148",
+   "cat": "Cuadros y decoración",
+   "nombre": "Soporte de celular One Piece Zoro",
+   "color": "",
+   "precio": 699,
+   "stock": 50,
+   "fotos": [
+    "https://http2.mlstatic.com/D_746362-MLU107121293479_022026-O.jpg",
+    "https://http2.mlstatic.com/D_999771-MLU106480508924_022026-O.jpg",
+    "https://http2.mlstatic.com/D_897685-MLU107123336143_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274190872",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas medio círculo",
+   "color": "Geométrico violeta",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_839305-MLU109142075978_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274225580",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas medio círculo",
+   "color": "Zigzag turquesa",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_905063-MLU109141514300_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274190874",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas medio círculo",
+   "color": "Paisaje verde agua",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_847168-MLU109983160707_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274225578",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas medio círculo",
+   "color": "Orgánico verde oliva",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_665150-MLU109983072293_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274203500",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas medio círculo",
+   "color": "Floral arabesco",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_619328-MLU109983131243_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274222956",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas aro circular",
+   "color": "Floral completo",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_709225-MLU109141506044_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274222954",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas aro circular",
+   "color": "Botánico negro",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_941287-MLU109140914394_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274213868",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas aro circular",
+   "color": "Floral natural",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_739566-MLU109983122825_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1274201020",
+   "cat": "Caravanas de madera",
+   "nombre": "Caravanas aro circular",
+   "color": "Animal print",
+   "precio": 269,
+   "stock": 15,
+   "fotos": [
+    "https://http2.mlstatic.com/D_857301-MLU109142215118_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069760292",
+   "cat": "Bases para torta con tu logo",
+   "nombre": "Bases para torta 22 cm con logo grabado",
+   "color": "Pack 25",
+   "precio": 2090,
+   "stock": 99,
+   "fotos": [
+    "https://http2.mlstatic.com/D_923550-MLU107321999655_022026-O.jpg",
+    "https://http2.mlstatic.com/D_693748-MLU106666143592_022026-O.jpg",
+    "https://http2.mlstatic.com/D_750278-MLU106666465120_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069708556",
+   "cat": "Bases para torta con tu logo",
+   "nombre": "Bases para torta 22 cm con logo grabado",
+   "color": "Pack 100",
+   "precio": 7390,
+   "stock": 100,
+   "fotos": [
+    "https://http2.mlstatic.com/D_693748-MLU106666143592_022026-O.jpg",
+    "https://http2.mlstatic.com/D_923550-MLU107321999655_022026-O.jpg",
+    "https://http2.mlstatic.com/D_751373-MLU106666506054_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069786196",
+   "cat": "Bases para torta con tu logo",
+   "nombre": "Bases para torta 25 cm con logo grabado",
+   "color": "Pack 25",
+   "precio": 2390,
+   "stock": 99,
+   "fotos": [
+    "https://http2.mlstatic.com/D_693748-MLU106666143592_022026-O.jpg",
+    "https://http2.mlstatic.com/D_751373-MLU106666506054_022026-O.jpg",
+    "https://http2.mlstatic.com/D_923550-MLU107321999655_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069553048",
+   "cat": "Bases para torta con tu logo",
+   "nombre": "Bases para torta 25 cm con logo grabado",
+   "color": "Pack 100",
+   "precio": 8490,
+   "stock": 100,
+   "fotos": [
+    "https://http2.mlstatic.com/D_693748-MLU106666143592_022026-O.jpg",
+    "https://http2.mlstatic.com/D_751373-MLU106666506054_022026-O.jpg",
+    "https://http2.mlstatic.com/D_732294-MLU107322133529_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU1069824486",
+   "cat": "Bases para torta con tu logo",
+   "nombre": "Bases para torta 28 cm con logo grabado",
+   "color": "Pack 10 + 1",
+   "precio": 1350,
+   "stock": 99,
+   "fotos": [
+    "https://http2.mlstatic.com/D_693748-MLU106666143592_022026-O.jpg",
+    "https://http2.mlstatic.com/D_809181-MLU106667130732_022026-O.jpg",
+    "https://http2.mlstatic.com/D_777535-MLU107322549857_022026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU647631235",
+   "cat": "Souvenirs y Navidad",
+   "nombre": "Llavero 3D con nombre",
+   "color": "",
+   "precio": 115,
+   "stock": 148,
+   "fotos": [
+    "https://http2.mlstatic.com/D_700872-MLU81757134049_012025-O.jpg",
+    "https://http2.mlstatic.com/D_885696-MLU81756992131_012025-O.jpg",
+    "https://http2.mlstatic.com/D_641449-MLU81757089093_012025-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU965897984",
+   "cat": "Souvenirs y Navidad",
+   "nombre": "Puntero navideño de madera: estrella, ángel o copo",
+   "color": "",
+   "precio": 130,
+   "stock": 45,
+   "fotos": [
+    "https://http2.mlstatic.com/D_766333-MLU99499402616_112025-O.jpg",
+    "https://http2.mlstatic.com/D_662003-MLU99499402618_112025-O.jpg"
+   ]
+  }
+ ]
 }
