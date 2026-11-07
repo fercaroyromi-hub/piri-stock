@@ -860,7 +860,7 @@ async function subirFoto() {
   if (ok) abrirProd(FP.id);
 }
 async function compartirProd(id) {
-  const p = P(id), link = CAT_URL + '#' + id;
+  const p = P(id), link = new URL('catalogo.html', location.href).href + '#' + id;
   const txt = `*${nm(p)}*${p.precio ? '\n💲 ' + pesos(p.precio) : ''}\n${p.stock > 0 ? '✅ Disponible' : '⏳ Consultar disponibilidad'}\n\nMirá el catálogo y pedí acá 👉 ${link}`;
   if (p.foto && navigator.canShare) {
     try {
