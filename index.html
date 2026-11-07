@@ -422,7 +422,7 @@ function renderInicio() {
     <button class="kpi red" onclick="filtrarEstado('s')"><span>Sin stock</span><b>${sin}</b></button>
   </div>
   <div class="catbox"><div class="ct"><span>🛍️</span><div><b>Catálogo para clientes</b><small>Lo que ven tus clientes, con fotos, precios y pedido por WhatsApp</small></div></div>
-    <div class="row2"><button onclick="window.open(CAT_URL,'_blank')">👀 Ver catálogo</button><button class="wa" onclick="compartirCatalogo()">💬 Compartir</button></div>
+    <div class="row2"><button onclick="location.href=CAT_VER">👀 Ver catálogo</button><button class="wa" onclick="compartirCatalogo()">💬 Compartir</button></div>
     <button class="uno" onclick="pasarProducto()">🔗 Pasar un solo producto</button></div>
   <button class="fact" onclick="abrirFactura()"><span>📷</span><div><b>Cargar una factura</b><small>Sacale una foto y se suma sola al stock con lo que te costó</small></div></button>
   ${sinCargar ? `<div class="card"><h3>Primer paso</h3><div style="font-size:14px;line-height:1.5">Contá lo que tenés de cada producto y cargalo. Después, cada compra la sumás con <b>Compré</b> o con la foto de la factura.</div><button class="btn-main" data-t="Empezar a contar" onclick="abrirConteoRapido()">Empezar a contar</button></div>` : ''}
@@ -501,7 +501,7 @@ function renderAjustes() {
   $('#vAjustes').innerHTML = `
   <div class="card"><h3>Catálogo para clientes <em>${enCat} productos</em></h3>
     <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Pasale este link a quien te pregunte qué tenés. Ve fotos, precios y si hay; y te escribe por WhatsApp.</div>
-    <div class="qa" style="grid-template-columns:1fr 1fr;margin-top:0"><button class="a3" onclick="window.open(CAT_URL,'_blank')">👁️ Ver catálogo</button><button class="a1" style="background:#E7F8EE;color:#128C4A" onclick="compartirCatalogo()">💬 Mandar por WhatsApp</button></div>
+    <div class="qa" style="grid-template-columns:1fr 1fr;margin-top:0"><button class="a3" onclick="location.href=CAT_VER">👁️ Ver catálogo</button><button class="a1" style="background:#E7F8EE;color:#128C4A" onclick="compartirCatalogo()">💬 Mandar por WhatsApp</button></div>
     <div class="li" onclick="abrirCatalogoAjustes()" style="margin-top:6px"><div class="ic">⚙️</div><div class="tx"><b>Ajustes del catálogo</b><small>WhatsApp: ${esc((S.config.whatsapp || []).map(t => t.nombre || ('0' + t.numero.slice(3))).join(' y ') || 'sin cargar')} · ${S.config.mostrarCant ? 'muestra cantidades' : 'Disponible / Agotado'}</small></div><span style="color:var(--muted)">›</span></div></div>
   <div class="card"><h3>Productos <em>${S.productos.length}</em></h3>
     ${S.productos.slice().sort((a, b) => nm(a).localeCompare(nm(b))).map(p => `<div class="li" onclick="abrirEditar('${p.id}')"><div class="ic">${esc(p.id)}</div><div class="tx"><b>${esc(nm(p))}</b><small>${esc(p.cat)} · mínimo ${num(p.min)}${p.costo ? ' · ' + pesos(p.costo) : ''}</small></div><span style="color:var(--muted)">›</span></div>`).join('')}
@@ -787,6 +787,7 @@ async function guardarConteoRapido() {
 
 /* ---------- fotos profesionales y catálogo ---------- */
 const CAT_URL = 'https://is.gd/catalogopiri';
+const CAT_VER = new URL('catalogo.html', location.href).href;
 const fotoUrl = (fid, w) => fid ? `https://lh3.googleusercontent.com/d/${fid}=w${w || 600}` : '';
 const thumb = (p, cls) => p && p.foto ? `<img class="${cls || 'th'}" src="${fotoUrl(p.foto, 200)}" alt="" loading="lazy" onerror="this.remove()">` : '';
 let FP = null;
