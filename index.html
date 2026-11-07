@@ -621,15 +621,41 @@ function abrirFoto(id) {
   <div class="prev" style="line-height:1.55">Sacala como te salga: la app <b>recorta el producto</b>, le pone <b>fondo blanco</b>, corrige <b>luz y colores</b> y la deja centrada con una sombra suave.<br><span style="color:var(--muted);font-size:12px">La primera vez descarga el recortador (unos 90 MB): mejor con wifi. Después funciona rápido.</span></div>
   <label class="btn-main" style="display:block;text-align:center;cursor:pointer">🖼️ Elegir foto de la galería<input type="file" accept="image/*" hidden onchange="procesarFoto(this.files[0])"></label>
   <label class="btn-sec" style="display:block;text-align:center;cursor:pointer">📷 Sacar foto ahora<input type="file" accept="image/*" capture="environment" hidden onchange="procesarFoto(this.files[0])"></label>
-  <div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center">Consejo: sacá la foto antes con la cámara del celular y después elegila de la galería. Así el celular no se queda sin memoria.</div>
+  <label class="btn-sec" style="display:block;text-align:center;cursor:pointer">📎 Subir tal cual, sin retocar<input type="file" accept="image/*" hidden onchange="procesarFoto(this.files[0], true)"></label>
+  <div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center">Si la foto ya tiene fondo blanco (por ejemplo, hecha con IA), la app la deja intacta sola.<br>Consejo: sacá la foto antes con la cámara y elegila de la galería, así el celular no se queda sin memoria.</div>
   <div id="fpProg"></div>`);
 }
-async function procesarFoto(file) {
+// foto sin tocar: solo se achica a 1600 px para que no pese tanto (mismo encuadre, mismos colores)
+async function talCual(file) {
+  const im = await new Promise((ok, mal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => mal(new Error('No pude abrir la foto')); i.src = URL.createObjectURL(file); });
+  const k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+  c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+  const x = c.getContext('2d', { willReadFrequently: true }); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+  // ¿ya tiene fondo blanco? (miramos el borde de la foto)
+  const d = x.getImageData(0, 0, c.width, c.height).data, w = c.width, h = c.height; let blancos = 0, total = 0;
+  const mira = (X, Y) => { const i = (Y * w + X) * 4; total++; if (d[i] > 228 && d[i + 1] > 228 && d[i + 2] > 228) blancos++; };
+  for (let X = 0; X < w; X += 4) { mira(X, 2); mira(X, h - 3); }
+  for (let Y = 0; Y < h; Y += 4) { mira(2, Y); mira(w - 3, Y); }
+  return { blob: await new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.92)), fondoBlanco: blancos / total > 0.9 };
+}
+async function procesarFoto(file, sinRetocar) {
   if (!file) return;
   const pr = $('#fpProg');
   const avance = (t, p) => pr.innerHTML = `<div class="prev" style="text-align:center">${t}${p != null ? `<div class="meter" style="margin-top:8px"><i style="width:${Math.round(p * 100)}%;background:var(--navy3)"></i></div>` : ''}</div>`;
   try {
     avance('Preparando…', null);
+    const tc = await talCual(file);
+    if (sinRetocar || tc.fondoBlanco) {
+      FP.pro = FP.simple = tc.blob; FP.usar = 'pro';
+      const u = URL.createObjectURL(tc.blob);
+      abrir(`<h2>¿Cómo quedó?</h2><div class="sh-sub">${esc(nm(P(FP.id)))} · ${sinRetocar ? 'tal cual la subiste, sin retoques' : 'ya tenía fondo blanco: la dejé intacta'}</div>
+      <img class="fprev" src="${u}" alt="">
+      <button class="btn-main" data-t="Usar esta foto" onclick="subirFoto()">Usar esta foto</button>
+      ${sinRetocar ? '' : `<button class="btn-sec" onclick="procesarFotoForzada()">Retocarla igual (recortar y corregir)</button>`}
+      <button class="btn-sec" onclick="abrirFoto('${FP.id}')">Elegir otra</button>`);
+      FP.archivo = file;
+      return;
+    }
     const { fotoProfesional } = await import('./foto-pro.js');
     const r = await fotoProfesional(file, avance);
     FP.pro = r.pro; FP.simple = r.simple; FP.usar = 'pro';
@@ -639,6 +665,18 @@ async function procesarFoto(file) {
     ${r.recortada ? `<div class="seg" style="margin-top:10px"><button class="on" onclick="FP.usar='pro';$('#fpImg').src='${u1}';$$('#shC .seg button').forEach((b,i)=>b.classList.toggle('on',i===0))">Fondo blanco</button><button onclick="FP.usar='simple';$('#fpImg').src='${u2}';$$('#shC .seg button').forEach((b,i)=>b.classList.toggle('on',i===1))">Original mejorada</button></div>` : ''}
     <button class="btn-main" data-t="Usar esta foto" onclick="subirFoto()">Usar esta foto</button>
     <button class="btn-sec" onclick="abrirFoto('${FP.id}')">Sacar otra</button>`);
+  } catch (e) { pr.innerHTML = ''; toast('No se pudo procesar la foto: ' + e.message, true); }
+}
+async function procesarFotoForzada() {
+  const f = FP.archivo; abrirFoto(FP.id); FP.archivo = f;
+  const pr = $('#fpProg');
+  const avance = (t, p) => pr.innerHTML = `<div class="prev" style="text-align:center">${t}${p != null ? `<div class="meter" style="margin-top:8px"><i style="width:${Math.round(p * 100)}%;background:var(--navy3)"></i></div>` : ''}</div>`;
+  try {
+    const { fotoProfesional } = await import('./foto-pro.js');
+    const r = await fotoProfesional(f, avance);
+    FP.pro = r.pro; FP.simple = r.simple; FP.usar = 'pro';
+    abrir(`<h2>¿Cómo quedó?</h2><div class="sh-sub">${esc(nm(P(FP.id)))}</div><img class="fprev" src="${URL.createObjectURL(r.pro)}" alt="">
+    <button class="btn-main" data-t="Usar esta foto" onclick="subirFoto()">Usar esta foto</button><button class="btn-sec" onclick="abrirFoto('${FP.id}')">Elegir otra</button>`);
   } catch (e) { pr.innerHTML = ''; toast('No se pudo procesar la foto: ' + e.message, true); }
 }
 function aDataURL(b) { return new Promise(ok => { const f = new FileReader(); f.onload = () => ok(f.result); f.readAsDataURL(b); }); }
