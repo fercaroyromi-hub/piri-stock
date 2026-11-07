@@ -92,7 +92,7 @@ let D = { productos: [], whatsapp: [] }, grupos = [], cat = '', elegido = {};
 
 function agrupar() {
   const g = {};
-  D.productos.forEach(p => { const k = p.cat + '|' + p.nombre; (g[k] = g[k] || { nombre: p.nombre, cat: p.cat, items: [] }).items.push(p); });
+  D.productos.forEach(p => { p.nombre = String(p.nombre || '').replace(/\s+/g, ' ').trim(); const k = p.cat + '|' + p.nombre; (g[k] = g[k] || { nombre: p.nombre, cat: p.cat, items: [] }).items.push(p); });
   grupos = Object.values(g).map(x => {
     x.items.sort((a, b) => (b.disponible - a.disponible) || String(a.color).localeCompare(String(b.color)));
     x.disp = x.items.some(i => i.disponible);

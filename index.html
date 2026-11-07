@@ -277,6 +277,7 @@ const LS = { get: k => { try { return localStorage.getItem(k) } catch (e) { retu
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const num = n => (Math.round(n * 100) / 100).toLocaleString('es-UY');
 const pesos = n => '$ ' + Math.round(n).toLocaleString('es-UY');
+const limpiarNombres = L => (L || []).map(p => Object.assign(p, { nombre: String(p.nombre || '').replace(/\s+/g, ' ').trim() }));
 const S = { pin: LS.get('piri.stock.pin') || '', usuario: LS.get('piri.stock.user') || '', productos: [], kits: {}, movimientos: [], pendientes: [], usuarios: [], alias: {}, facturas: [], compras: [], gastos: [], config: {}, cat: '', vista: 'vInicio' };
 const nm = p => p ? p.nombre + (p.color ? ' · ' + p.color : '') : '';
 const estadoDe = p => p.stock <= 0 ? 's' : (p.stock <= p.min ? 'r' : 'ok');
@@ -297,7 +298,7 @@ async function api(action, data = {}) {
     catch (e) { throw new Error('Sin conexión a internet'); }
     let j; try { j = await r.json(); } catch (e) { throw new Error('No se pudo leer la planilla'); }
     if (!j.ok) throw new Error(j.error || 'Error');
-    Object.assign(S, { productos: j.productos, kits: j.kits, movimientos: j.movimientos, pendientes: j.pendientes, usuarios: j.usuarios, alias: j.alias || {}, facturas: j.facturas || [], compras: j.compras || [], gastos: j.gastos || [], config: j.config || {} });
+    Object.assign(S, { productos: limpiarNombres(j.productos), kits: j.kits, movimientos: j.movimientos, pendientes: j.pendientes, usuarios: j.usuarios, alias: j.alias || {}, facturas: j.facturas || [], compras: j.compras || [], gastos: j.gastos || [], config: j.config || {} });
     LS.set('piri.stock.cache', JSON.stringify(j));
     render();
     return j;
@@ -600,7 +601,7 @@ function abrirEditar(id, desdeCompra) {
   <button class="btn-main" data-t="Guardar" onclick="guardarProd('${id || ''}',${desdeCompra ? 'true' : 'false'})">Guardar</button>`);
 }
 function guardarProd(id, desdeCompra) {
-  const nombre = $('#eN').value.trim(); if (!nombre) return toast('Poné el nombre', true);
+  const nombre = $('#eN').value.replace(/\s+/g, ' ').trim(); if (!nombre) return toast('Poné el nombre', true);
   const k = $('#eK').value.trim();
   const pv = $('#eP').value.trim();
   const d = { id, nombre, cat: $('#eC').value.trim() || 'Otros', unidad: $('#eU').value.trim() || 'unidades', min: Number($('#eM').value) || 0, costo: k === '' ? '' : Number(k), precio: pv === '' ? '' : Number(pv), catalogo: $('#eV').checked };
@@ -623,7 +624,7 @@ function pintarKit() {
   $('#kItems').innerHTML = KIT.map((c, i) => `<div class="kitrow"><select onchange="KIT[${i}].id=this.value"><option value="">Elegí…</option>${S.productos.map(p => `<option value="${p.id}" ${c.id === p.id ? 'selected' : ''}>${esc(nm(p))}</option>`).join('')}</select><input type="number" inputmode="decimal" value="${c.cant}" onchange="KIT[${i}].cant=Number(this.value)"><button class="rmx" onclick="KIT.splice(${i},1);pintarKit()">×</button></div>`).join('');
 }
 function guardarKit(anterior) {
-  const nombre = $('#kN').value.trim(); if (!nombre) return toast('Poné el nombre del kit', true);
+  const nombre = $('#kN').value.replace(/\s+/g, ' ').trim(); if (!nombre) return toast('Poné el nombre del kit', true);
   const items = KIT.filter(c => c.id && c.cant > 0); if (!items.length) return toast('Elegí al menos un producto', true);
   enviar('kit', { nombre, anterior, items }, '✓ Kit guardado');
 }
@@ -997,7 +998,7 @@ function abrirFacturaDet(id) {
 
 /* ---------- inicio ---------- */
 (function () {
-  try { const c = JSON.parse(LS.get('piri.stock.cache') || 'null'); if (c) Object.assign(S, { productos: c.productos, kits: c.kits, movimientos: c.movimientos, pendientes: c.pendientes, usuarios: c.usuarios, alias: c.alias || {}, facturas: c.facturas || [], compras: c.compras || [], gastos: c.gastos || [], config: c.config || {} }); } catch (e) {}
+  try { const c = JSON.parse(LS.get('piri.stock.cache') || 'null'); if (c) Object.assign(S, { productos: limpiarNombres(c.productos), kits: c.kits, movimientos: c.movimientos, pendientes: c.pendientes, usuarios: c.usuarios, alias: c.alias || {}, facturas: c.facturas || [], compras: c.compras || [], gastos: c.gastos || [], config: c.config || {} }); } catch (e) {}
   if (S.pin) { $('#ovPin').hidden = true; render(); refrescar(true); } else render();
   document.addEventListener('visibilitychange', () => { if (!document.hidden && S.pin) refrescar(true); });
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {});
