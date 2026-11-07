@@ -784,7 +784,7 @@ async function guardarConteoRapido() {
 }
 
 /* ---------- fotos profesionales y catálogo ---------- */
-const CAT_URL = new URL('catalogo.html', location.href).href;
+const CAT_URL = 'https://is.gd/catalogopiri';
 const fotoUrl = (fid, w) => fid ? `https://lh3.googleusercontent.com/d/${fid}=w${w || 600}` : '';
 const thumb = (p, cls) => p && p.foto ? `<img class="${cls || 'th'}" src="${fotoUrl(p.foto, 200)}" alt="" loading="lazy" onerror="this.remove()">` : '';
 let FP = null;
