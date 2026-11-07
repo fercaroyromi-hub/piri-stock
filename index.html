@@ -643,6 +643,7 @@ function abrirProd(id) {
   ${kitsCon.length ? `<div style="font-size:12px;color:var(--muted);margin-top:12px">Se usa en: ${kitsCon.map(esc).join(', ')}</div>` : ''}
   <div class="card" style="box-shadow:none;border:1.5px solid var(--line)"><h3>Últimos movimientos</h3>${ms.length ? ms.map(movLi).join('') : '<div class="vac">Sin movimientos</div>'}</div>
   <button class="btn-sec" onclick="abrirColores('${id}')">🎨 ${p.color || hermanos.length ? 'Agregar otro color' : 'Separar por colores'}</button>
+  <button class="btn-sec" onclick="abrirEditar(null,false,'${id}')">📏 Agregar otra medida de ${esc(partir(p.nombre).tipo)}</button>
   <button class="btn-sec" onclick="abrirEditar('${id}')">Editar producto</button>`);
 }
 function abrirColores(id) {
@@ -662,12 +663,13 @@ function abrirMovDet(id) {
 }
 function anularMov(id) { if (confirmar('¿Anular? El stock vuelve a como estaba antes de este movimiento.')) enviar('anular', { id }, '✓ Movimiento anulado'); }
 function confirmar(t) { return window.confirm(t); }
-function abrirEditar(id, desdeCompra) {
+function abrirEditar(id, desdeCompra, copiaDe) {
   EF = { blob: null, ocupado: false };
-  const p = id ? P(id) : { nombre: '', cat: '', unidad: 'unidades', min: 5, costo: '', color: '', precio: '', catalogo: true };
+  const cp = copiaDe ? P(copiaDe) : null;
+  const p = id ? P(id) : cp ? { nombre: partir(cp.nombre).tipo, cat: cp.cat, unidad: cp.unidad, min: cp.min, costo: cp.costo, color: '', precio: cp.precio, catalogo: true } : { nombre: '', cat: '', unidad: 'unidades', min: 5, costo: '', color: '', precio: '', catalogo: true };
   const cats = [...new Set(S.productos.map(x => x.cat))].sort(), pt = partir(p.nombre);
-  abrir(`<h2>${id ? 'Editar producto' : 'Producto nuevo'}</h2>${id ? '' : '<div class="sh-sub">Algo nuevo que empezás a vender o comprar</div>'}
-  <div class="row2"><div class="f"><label>Nombre</label><input id="eN" value="${esc(pt.tipo)}" placeholder="Ej.: Termo, Kit termo + mate"></div><div class="f"><label>Medida</label><input id="eMed" list="dlMed" value="${esc(pt.medida)}" placeholder="Ej.: 1300 ml"><datalist id="dlMed">${['260 ml', '500 ml', '900 ml', '1 L', '1200 ml', '1300 ml'].map(x => `<option value="${x}">`).join('')}</datalist></div></div>
+  abrir(`<h2>${id ? 'Editar producto' : cp ? 'Otra medida de ' + esc(partir(cp.nombre).tipo) : 'Producto nuevo'}</h2>${id ? '' : cp ? '<div class="sh-sub">Ya te dejé cargado lo de ' + esc(nm(cp)) + ': cambiá la medida, los colores y los precios si son distintos</div>' : '<div class="sh-sub">Algo nuevo que empezás a vender o comprar</div>'}
+  <div class="row2"><div class="f"><label>Nombre</label><input id="eN" list="dlTipo" value="${esc(pt.tipo)}" placeholder="Ej.: Termo, Kit termo + mate" oninput="tipoElegido(this.value)"><datalist id="dlTipo">${[...new Set(S.productos.map(x => partir(x.nombre).tipo))].sort().map(t => `<option value="${esc(t)}">`).join('')}</datalist></div><div class="f"><label>Medida</label><input id="eMed" list="dlMed" value="${esc(pt.medida)}" placeholder="Ej.: 1300 ml"><datalist id="dlMed">${['260 ml', '500 ml', '900 ml', '1 L', '1200 ml', '1300 ml'].map(x => `<option value="${x}">`).join('')}</datalist></div></div>
   <div class="f"><label>Categoría</label><input id="eC" list="dlCat" value="${esc(p.cat)}" placeholder="Ej.: Termos y Mates"><datalist id="dlCat">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist></div>
   ${id ? `<div class="f"><label>Color</label><input id="eCol" value="${esc(p.color)}" placeholder="Sin color"></div>` : `<div class="f"><label>Colores (opcional)</label><input id="eCols" placeholder="Ej.: Negro, Blanco, Rosa"><div style="font-size:11.5px;color:var(--muted);margin-top:5px">Si viene en varios colores, escribilos separados por coma y llevo el stock de cada uno.</div></div>`}
   <div class="row2"><div class="f"><label>${id ? 'Cantidad en stock' : (`¿Cuántos tenés ahora?`)}</label><input id="eQ" type="number" inputmode="decimal" min="0" value="${id ? p.stock : ''}" placeholder="0"></div><div class="f"><label>Stock mínimo</label><input id="eM" type="number" inputmode="decimal" value="${p.min}"></div></div>
@@ -681,6 +683,12 @@ function abrirEditar(id, desdeCompra) {
   </div>
   <label class="chk"><input type="checkbox" id="eV" ${!/^n/i.test(p.catRaw || '') ? 'checked' : ''}> Mostrar en el catálogo para clientes</label>
   <button class="btn-main" data-t="Guardar" onclick="guardarProd('${id || ''}',${desdeCompra ? 'true' : 'false'})">Guardar</button>`);
+  if (cp) setTimeout(() => { const m = $('#eMed'); if (m) { m.value = ''; m.focus(); } }, 50);
+}
+// al escribir un tipo que ya existe (ej.: Termo), completa la categoría si está vacía
+function tipoElegido(v) {
+  const q = S.productos.find(x => partir(x.nombre).tipo.toLowerCase() === String(v).trim().toLowerCase());
+  if (q && !$('#eC').value.trim()) $('#eC').value = q.cat;
 }
 let EF = { blob: null, ocupado: false };
 // foto elegida dentro del formulario del producto: se procesa acá y se sube al guardar
