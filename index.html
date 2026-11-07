@@ -524,7 +524,8 @@ function pintarMov() {
   $('#movF').innerHTML = `
   <div class="f"><label>${t === 'Venta' ? 'Qué vendiste' : 'Producto'}</label><select id="mDest" onchange="if(this.value==='NUEVO'){abrirEditar(null,true);return}M.destino=this.value;pintarColorMov();prevMov()"><option value="">Elegí…</option>${t === 'Venta' ? optsDest(M.destino) : optsProd(M.destino)}${t === 'Entrada' ? '<option value="NUEVO">➕ Producto nuevo…</option>' : ''}</select><div id="mColor"></div></div>
   <div class="f"><label>${t === 'Conteo' ? '¿Cuántas hay en total?' : 'Cantidad'}</label>${stepper('mCant', t === 'Conteo' ? (P(M.destino.slice(2)) || { stock: 0 }).stock : 1)}</div>
-  ${t === 'Entrada' ? `<div class="row2"><div class="f"><label>Costo por unidad ($)</label><input id="mCosto" type="number" inputmode="decimal" placeholder="${(P(M.destino.slice(2)) || {}).costo || 'Ej.: 350'}" oninput="prevMov()"></div><div class="f"><label>Total de la compra</label><input id="mTot" disabled value=""></div></div>` : ''}
+  ${t === 'Entrada' ? `<div class="row2"><div class="f"><label>Costo por unidad ($)</label><input id="mCosto" type="number" inputmode="decimal" placeholder="Ej.: 350" oninput="prevMov()"></div><div class="f"><label>Total de la compra</label><input id="mTot" disabled value=""></div></div>
+  <div class="f"><label>Precio de venta ($)</label><input id="mPrecio" type="number" inputmode="decimal" placeholder="Opcional"><div style="font-size:11.5px;color:var(--muted);margin-top:5px" id="mPrecioNota">Cada compra guarda su propio costo. Si cambiás el precio de venta, se actualiza en el producto y en el catálogo.</div></div>` : ''}
   ${t === 'Venta' ? `<div class="f"><label>Dónde</label><div class="seg" id="segC">${['Mercado Libre', 'Directa', 'Otro'].map(c => `<button class="${M.canal === c ? 'on' : ''}" onclick="M.canal='${c}';$$('#segC button').forEach(b=>b.classList.toggle('on',b.dataset.c==='${c}'))" data-c="${c}">${c === 'Directa' ? 'Por fuera' : c}</button>`).join('')}</div><div style="font-size:11.5px;color:var(--muted);margin-top:6px">Lo que cargás en Pirí Ventas se descuenta solo, no hace falta cargarlo acá.</div></div>` : ''}
   ${t === 'Salida' ? `<div class="f"><label>Motivo</label><div class="seg" id="segM">${['Uso', 'Rotura', 'Regalo'].map(c => `<button class="${(M.motivo || 'Uso') === c ? 'on' : ''}" onclick="M.motivo='${c}';$$('#segM button').forEach(b=>b.classList.toggle('on',b.textContent==='${c}'))">${c}</button>`).join('')}</div></div>` : ''}
   <div class="f"><label>Nota (opcional)</label><input id="mNota" placeholder="${t === 'Entrada' ? 'Ej.: proveedor' : 'Ej.: cliente, detalle'}"></div>
@@ -535,7 +536,15 @@ function pintarMov() {
   prevMov();
 }
 // en "Compré" y "Conté": agregar un color nuevo del producto elegido sin salir del movimiento
+function camposCompra() {
+  const p = (M.destino || '').startsWith('P:') ? P(M.destino.slice(2)) : null;
+  const c = $('#mCosto'), v = $('#mPrecio'); if (!c || !v) return;
+  c.value = p && p.costo !== '' && p.costo != null ? p.costo : '';
+  v.value = p && p.precio !== '' && p.precio != null ? p.precio : '';
+  c.placeholder = 'Ej.: 350';
+}
 function pintarColorMov(abierto) {
+  if (!abierto) camposCompra();
   const box = $('#mColor'); if (!box) return;
   const d = M.destino || '', p = d.startsWith('P:') ? P(d.slice(2)) : null;
   if (!p || (M.tipo !== 'Entrada' && M.tipo !== 'Conteo')) { box.innerHTML = ''; return; }
@@ -552,14 +561,14 @@ async function agregarColorMov() {
   if (ya) { M.destino = 'P:' + ya.id; toast('Ese color ya existía: lo elegí'); }
   else {
     const b = $('#mColB'); b.disabled = true; b.textContent = 'Agregando…';
-    const cant = $('#mCant') && $('#mCant').value, costo = $('#mCosto') && $('#mCosto').value, nota = $('#mNota') && $('#mNota').value;
+    const cant = $('#mCant') && $('#mCant').value, costo = $('#mCosto') && $('#mCosto').value, precio = $('#mPrecio') && $('#mPrecio').value, nota = $('#mNota') && $('#mNota').value;
     try {
       const antes = new Set(S.productos.map(x => x.id));
       await api('colores', { id: p.id, colores: [c] });
       const nuevo = S.productos.find(x => !antes.has(x.id) && x.nombre === p.nombre);
       if (nuevo) M.destino = 'P:' + nuevo.id;
       pintarMov();
-      if (cant && $('#mCant')) $('#mCant').value = cant; if (costo && $('#mCosto')) $('#mCosto').value = costo; if (nota && $('#mNota')) $('#mNota').value = nota;
+      if (cant && $('#mCant')) $('#mCant').value = cant; if (costo && $('#mCosto')) $('#mCosto').value = costo; if (precio && $('#mPrecio')) $('#mPrecio').value = precio; if (nota && $('#mNota')) $('#mNota').value = nota;
       prevMov(); toast('✓ Color ' + c + ' agregado');
       return;
     } catch (e) { toast(e.message, true); b.disabled = false; b.textContent = 'Agregar'; return; }
@@ -579,14 +588,22 @@ function prevMov() {
     return `${esc(nm(p))}: ${num(p.stock)} → <b>${num(nuevo)}</b>${nuevo < 0 ? ' <span style="color:var(--red)">(quedaría negativo)</span>' : nuevo <= p.min ? ' <span style="color:var(--warn)">(reponer)</span>' : ''}`;
   }).join('<br>');
 }
-function guardarMov() {
+async function guardarMov() {
   const d = $('#mDest').value, n = Number($('#mCant').value), nota = $('#mNota').value.trim();
   if (!d) return toast('Elegí el producto', true);
   if (M.tipo === 'Conteo') { if (!(n >= 0)) return toast('Poné cuántas hay', true); return enviar('conteo', { pid: d.slice(2), cant: n, nota }, '✓ Conteo guardado'); }
   if (!(n > 0)) return toast('La cantidad tiene que ser mayor a 0', true);
   if (M.tipo === 'Venta') return enviar('venta', { destino: d, cant: n, canal: M.canal, nota }, '✓ Venta descontada');
   const cEl = $('#mCosto'), costo = cEl ? (cEl.value.trim() === '' ? '' : Number(cEl.value)) : '';
-  enviar('mov', { pid: d.slice(2), tipo: M.tipo, motivo: M.motivo || 'Uso', cant: n, nota, costo }, M.tipo === 'Entrada' ? '✓ Entrada sumada' : '✓ Salida descontada');
+  if (M.tipo !== 'Entrada') return enviar('mov', { pid: d.slice(2), tipo: M.tipo, motivo: M.motivo || 'Uso', cant: n, nota, costo }, '✓ Salida descontada');
+  const p = P(d.slice(2)), vEl = $('#mPrecio'), precio = vEl && vEl.value.trim() !== '' ? Number(vEl.value) : '';
+  const cambiaPrecio = vEl && String(precio) !== String(p.precio === null || p.precio === undefined ? '' : p.precio);
+  const b = $('#shC .btn-main'); if (b) { b.disabled = true; b.textContent = 'Guardando…'; }
+  try {
+    await api('mov', { pid: p.id, tipo: 'Entrada', cant: n, nota, costo });
+    if (cambiaPrecio) { const q = P(p.id); await api('producto', { id: q.id, nombre: q.nombre, cat: q.cat, unidad: q.unidad, min: q.min, costo: q.costo, precio, color: q.color, catalogo: q.catalogo }); }
+    cerrar(); toast(cambiaPrecio ? '✓ Entrada sumada y precio actualizado' : '✓ Entrada sumada');
+  } catch (e) { toast(e.message, true); if (b) { b.disabled = false; b.textContent = b.dataset.t || 'Guardar'; } }
 }
 function abrirProd(id) {
   const p = P(id), e = estadoDe(p);
