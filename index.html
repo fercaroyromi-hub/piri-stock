@@ -184,6 +184,8 @@ textarea{resize:none;height:64px}
 .col b{font-weight:800;color:var(--ink);margin-left:2px}
 .col.r{border-color:var(--warn)}.col.s{border-color:var(--red);opacity:.85}.col.s b{color:var(--red)}
 .pr.grpc{cursor:default;align-items:flex-start}
+.medr{margin-top:9px}.medr .cols{margin-top:5px}
+.med{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.3px;color:var(--navy3);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:2px 8px}
 .total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff}
 .total span{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:.8}.total b{font-size:22px}
 .fitem{position:relative;border:1.5px solid var(--line);border-radius:14px;padding:12px;margin-top:12px;background:var(--card)}
@@ -279,6 +281,20 @@ const num = n => (Math.round(n * 100) / 100).toLocaleString('es-UY');
 const pesos = n => '$ ' + Math.round(n).toLocaleString('es-UY');
 const limpiarNombres = L => (L || []).map(p => Object.assign(p, { nombre: String(p.nombre || '').replace(/\s+/g, ' ').trim() }));
 const S = { pin: LS.get('piri.stock.pin') || '', usuario: LS.get('piri.stock.user') || '', productos: [], kits: {}, movimientos: [], pendientes: [], usuarios: [], alias: {}, facturas: [], compras: [], gastos: [], config: {}, cat: '', vista: 'vInicio' };
+// medida (mililitros / litros) separada del nombre: "Termo 1200 ml" → tipo "Termo", medida "1200 ml"
+const RX_MED = /\s+(\d+(?:[.,]\d+)?)\s*(ml|cc|l|lt|lts|litros?)\.?$/i;
+function partir(nombre) {
+  const n = String(nombre || '').replace(/\s+/g, ' ').trim(), m = n.match(RX_MED);
+  if (!m) return { tipo: n, medida: '' };
+  const u = m[2].toLowerCase(), v = m[1].replace('.', ',');
+  return { tipo: n.slice(0, m.index).trim(), medida: v + ' ' + (u === 'ml' || u === 'cc' ? 'ml' : 'L') };
+}
+function medidaLimpia(t) {
+  t = String(t || '').trim(); if (!t) return '';
+  if (/^\d+([.,]\d+)?$/.test(t)) return t + (Number(t.replace(',', '.')) < 10 ? ' L' : ' ml');
+  const m = (' ' + t).match(RX_MED); return m ? partir('x ' + t).medida : t;
+}
+const enMl = med => { const m = String(med).match(/([\d,]+)\s*(ml|L)/); return m ? Number(m[1].replace(',', '.')) * (m[2] === 'L' ? 1000 : 1) : 0; };
 const nm = p => p ? p.nombre + (p.color ? ' · ' + p.color : '') : '';
 const estadoDe = p => p.stock <= 0 ? 's' : (p.stock <= p.min ? 'r' : 'ok');
 const ETQ = { ok: 'OK', r: 'Reponer', s: 'Sin stock' };
@@ -422,16 +438,25 @@ function renderStock() {
   if (!L.length) { $('#lista').innerHTML = '<div class="vac" style="padding:40px 0">No hay productos con ese filtro</div>' + btnNuevo(); return; }
   const g = {}; L.forEach(p => (g[p.cat] = g[p.cat] || []).push(p));
   $('#lista').innerHTML = Object.keys(g).sort().map(c => {
-    const grupos = {}; g[c].forEach(p => (grupos[p.nombre] = grupos[p.nombre] || []).push(p));
+    const grupos = {}; g[c].forEach(p => { const t = partir(p.nombre).tipo; (grupos[t] = grupos[t] || []).push(p); });
     return `<div class="grp">${esc(c)}</div>` + Object.keys(grupos).sort().map(n => {
-      const ps = grupos[n].sort((a, b) => (a.color || '').localeCompare(b.color || ''));
-      if (ps.length === 1 && !ps[0].color) {
+      const ps = grupos[n];
+      if (ps.length === 1 && !ps[0].color && !partir(ps[0].nombre).medida) {
         const p = ps[0], e = estadoDe(p), pct = Math.max(4, Math.min(100, p.min ? p.stock / (p.min * 3) * 100 : (p.stock > 0 ? 100 : 0)));
         return `<div class="pr ${e === 'ok' ? '' : e}" onclick="abrirProd('${p.id}')">${thumb(p)}<div class="tx"><b>${esc(p.nombre)}<span class="b ${e}">${ETQ[e]}</span></b><small>Mínimo ${num(p.min)}${p.costo ? ' · costo ' + pesos(p.costo) : ''}</small><div class="meter"><i style="width:${pct}%"></i></div></div><div class="q"><b>${num(p.stock)}</b><small>${esc(p.unidad)}</small></div></div>`;
       }
+      // sub-grupos por medida
+      const med = {}; ps.forEach(p => { const m = partir(p.nombre).medida; (med[m] = med[m] || []).push(p); });
+      const orden = Object.keys(med).sort((a, b) => enMl(a) - enMl(b));
       const tot = ps.reduce((a, p) => a + p.stock, 0), peor = ps.some(p => estadoDe(p) === 's') ? 's' : ps.some(p => estadoDe(p) === 'r') ? 'r' : 'ok';
-      return `<div class="pr ${peor === 'ok' ? '' : peor} grpc">${thumb(ps.find(x => x.foto))}<div class="tx"><b>${esc(n)}</b><small>${ps.length} colores · mínimo ${num(ps[0].min)} c/u${(ps.find(x => x.costo) || {}).costo ? ' · costo ' + pesos(ps.find(x => x.costo).costo) : ''}</small>
-        <div class="cols">${ps.map(p => `<button class="col ${estadoDe(p)}" onclick="abrirProd('${p.id}')"><i style="background:${colorCss(p.color)}"></i>${esc(p.color || 'Sin color')}<b>${num(p.stock)}</b></button>`).join('')}</div></div>
+      const filas = orden.map(m => {
+        const xs = med[m].sort((a, b) => (a.color || '').localeCompare(b.color || ''));
+        const chips = xs.map(p => `<button class="col ${estadoDe(p)}" onclick="abrirProd('${p.id}')">${p.color ? `<i style="background:${colorCss(p.color)}"></i>${esc(p.color)}` : 'Ver'}<b>${num(p.stock)}</b></button>`).join('');
+        return orden.length > 1 || m ? `<div class="medr"><span class="med">${esc(m || 'Sin medida')}</span><div class="cols">${chips}</div></div>` : `<div class="cols">${chips}</div>`;
+      }).join('');
+      const nCol = new Set(ps.map(p => p.color).filter(Boolean)).size;
+      const sub = [orden.filter(Boolean).length > 1 ? orden.filter(Boolean).length + ' medidas' : '', nCol ? nCol + (nCol === 1 ? ' color' : ' colores') : ''].filter(Boolean).join(' · ');
+      return `<div class="pr ${peor === 'ok' ? '' : peor} grpc">${thumb(ps.find(x => x.foto))}<div class="tx"><b>${esc(n)}</b><small>${sub || 'Mínimo ' + num(ps[0].min)}</small>${filas}</div>
         <div class="q"><b>${num(tot)}</b><small>en total</small></div></div>`;
     }).join('');
   }).join('') + btnNuevo();
@@ -640,12 +665,14 @@ function confirmar(t) { return window.confirm(t); }
 function abrirEditar(id, desdeCompra) {
   EF = { blob: null, ocupado: false };
   const p = id ? P(id) : { nombre: '', cat: '', unidad: 'unidades', min: 5, costo: '', color: '', precio: '', catalogo: true };
-  const cats = [...new Set(S.productos.map(x => x.cat))].sort();
+  const cats = [...new Set(S.productos.map(x => x.cat))].sort(), pt = partir(p.nombre);
   abrir(`<h2>${id ? 'Editar producto' : 'Producto nuevo'}</h2>${id ? '' : '<div class="sh-sub">Algo nuevo que empezás a vender o comprar</div>'}
-  <div class="f"><label>Nombre</label><input id="eN" value="${esc(p.nombre)}" placeholder="Ej.: Termo 1200 ml"></div>
+  <div class="row2"><div class="f"><label>Nombre</label><input id="eN" value="${esc(pt.tipo)}" placeholder="Ej.: Termo, Kit termo + mate"></div><div class="f"><label>Medida</label><input id="eMed" list="dlMed" value="${esc(pt.medida)}" placeholder="Ej.: 1300 ml"><datalist id="dlMed">${['260 ml', '500 ml', '900 ml', '1 L', '1200 ml', '1300 ml'].map(x => `<option value="${x}">`).join('')}</datalist></div></div>
   <div class="f"><label>Categoría</label><input id="eC" list="dlCat" value="${esc(p.cat)}" placeholder="Ej.: Termos y Mates"><datalist id="dlCat">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist></div>
   ${id ? `<div class="f"><label>Color</label><input id="eCol" value="${esc(p.color)}" placeholder="Sin color"></div>` : `<div class="f"><label>Colores (opcional)</label><input id="eCols" placeholder="Ej.: Negro, Blanco, Rosa"><div style="font-size:11.5px;color:var(--muted);margin-top:5px">Si viene en varios colores, escribilos separados por coma y llevo el stock de cada uno.</div></div>`}
-  <div class="row2"><div class="f"><label>Unidad</label><input id="eU" value="${esc(p.unidad)}"></div><div class="f"><label>Stock mínimo</label><input id="eM" type="number" inputmode="decimal" value="${p.min}"></div></div>
+  <div class="row2"><div class="f"><label>${id ? 'Cantidad en stock' : (`¿Cuántos tenés ahora?`)}</label><input id="eQ" type="number" inputmode="decimal" min="0" value="${id ? p.stock : ''}" placeholder="0"></div><div class="f"><label>Stock mínimo</label><input id="eM" type="number" inputmode="decimal" value="${p.min}"></div></div>
+  <div style="font-size:11.5px;color:var(--muted);margin:-4px 0 8px">${id ? 'Si cambiás la cantidad, queda registrado como un conteo.' : 'Si cargás varios colores, es la cantidad de cada color.'} El mínimo es para que la app te avise cuándo reponer.</div>
+  <input type="hidden" id="eU" value="${esc(/^\d+$/.test(p.unidad) ? 'unidades' : p.unidad)}">
   <div class="row2"><div class="f"><label>Te cuesta ($)</label><input id="eK" type="number" inputmode="decimal" value="${p.costo === '' ? '' : p.costo}" placeholder="Opcional"></div><div class="f"><label>Precio de venta ($)</label><input id="eP" type="number" inputmode="decimal" value="${p.precio === '' || p.precio == null ? '' : p.precio}" placeholder="Para el catálogo"></div></div>
   <div class="f"><label>Foto</label>
     <div id="eFoto">${p.foto ? `<img class="fprev" style="max-width:220px" src="${fotoUrl(p.foto, 600)}" alt="">` : ''}</div>
@@ -653,7 +680,6 @@ function abrirEditar(id, desdeCompra) {
     <div style="font-size:11.5px;color:var(--muted);margin-top:5px">"Elegir foto" la deja con fondo blanco y luz corregida. "Tal cual" la sube sin tocar (para fotos ya prolijas, como las de ChatGPT).${id ? '' : ' Si cargás varios colores, la foto va en todos; después podés cambiar la de cada color.'}</div>
   </div>
   <label class="chk"><input type="checkbox" id="eV" ${!/^n/i.test(p.catRaw || '') ? 'checked' : ''}> Mostrar en el catálogo para clientes</label>
-  <div style="font-size:12px;color:var(--muted);margin-top:8px">Cuando el stock llega al mínimo, la app te avisa que hay que reponer.</div>
   <button class="btn-main" data-t="Guardar" onclick="guardarProd('${id || ''}',${desdeCompra ? 'true' : 'false'})">Guardar</button>`);
 }
 let EF = { blob: null, ocupado: false };
@@ -681,25 +707,22 @@ async function fotoForm(file, sinRetocar) {
 }
 async function guardarProd(id, desdeCompra) {
   if (EF.ocupado) return toast('Esperá a que termine la foto', true);
-  const nombre = $('#eN').value.replace(/\s+/g, ' ').trim(); if (!nombre) return toast('Poné el nombre', true);
+  const base = $('#eN').value.replace(/\s+/g, ' ').trim(); if (!base) return toast('Poné el nombre', true);
+  const nombre = (partir(base).medida ? base : (base + ' ' + medidaLimpia($('#eMed').value)).trim());
+  const qv = $('#eQ').value.trim(), cantQ = qv === '' ? null : Number(qv);
+  if (cantQ !== null && !(cantQ >= 0)) return toast('La cantidad tiene que ser 0 o más', true);
   const k = $('#eK').value.trim();
   const pv = $('#eP').value.trim();
   const d = { id, nombre, cat: $('#eC').value.trim() || 'Otros', unidad: $('#eU').value.trim() || 'unidades', min: Number($('#eM').value) || 0, costo: k === '' ? '' : Number(k), precio: pv === '' ? '' : Number(pv), catalogo: $('#eV').checked };
   if (id) { d.color = $('#eCol').value.trim(); d.todosLosColores = true; } else d.colores = $('#eCols').value.split(',').map(x => x.trim()).filter(Boolean);
-  const foto = EF.blob, antes = new Set(S.productos.map(x => x.id));
-  if (!foto) {
-    const ok = await enviar('producto', d, id ? '✓ Producto actualizado' : '✓ Producto agregado');
-    if (ok && desdeCompra) { const np = S.productos.filter(x => x.nombre === nombre).pop(); abrirMov(np && np.id, 'Entrada'); }
-    return;
-  }
+  const foto = EF.blob, antes = new Set(S.productos.map(x => x.id)), stockAntes = id ? P(id).stock : 0;
   const b = $('#shC .btn-main'); if (b) { b.disabled = true; b.textContent = 'Guardando…'; }
   try {
     await api('producto', d);
     const ids = id ? [id] : S.productos.filter(x => !antes.has(x.id) && x.nombre === nombre).map(x => x.id);
-    if (b) b.textContent = 'Subiendo la foto…';
-    const imagen = await aDataURL(foto);
-    for (const x of ids) await api('foto', { id: x, imagen });
-    cerrar(); toast(id ? '✓ Producto y foto actualizados' : '✓ Producto agregado con su foto');
+    if (cantQ !== null && (!id || cantQ !== stockAntes)) { if (b) b.textContent = 'Guardando la cantidad…'; for (const x of ids) if (cantQ > 0 || id) await api('conteo', { pid: x, cant: cantQ, nota: id ? 'Desde editar producto' : 'Cantidad inicial' }); }
+    if (foto) { if (b) b.textContent = 'Subiendo la foto…'; const imagen = await aDataURL(foto); for (const x of ids) await api('foto', { id: x, imagen }); }
+    cerrar(); toast(id ? '✓ Producto actualizado' : '✓ Producto agregado');
     if (desdeCompra) { const np = S.productos.filter(x => x.nombre === nombre).pop(); abrirMov(np && np.id, 'Entrada'); }
   } catch (e) { toast(e.message, true); if (b) { b.disabled = false; b.textContent = b.dataset.t || 'Guardar'; } }
 }
