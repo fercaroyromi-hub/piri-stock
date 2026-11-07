@@ -39,6 +39,7 @@ header p{font-size:13px;opacity:.8;margin-top:4px}
 .shr{display:block;width:100%;margin-top:8px;padding:9px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-size:12.5px;font-weight:700;color:var(--navy)}
 .solo{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:14px;padding:12px 14px;margin:14px 0;box-shadow:0 4px 16px rgba(15,40,74,.07);font-size:13px;color:var(--muted)}
 .solo button{border:0;background:var(--navy);color:#fff;border-radius:10px;padding:9px 12px;font-weight:700;font-size:12.5px;white-space:nowrap}
+.solo[hidden],.search[hidden],.chips[hidden]{display:none}
 .grid.uno{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}
 .mlk{display:block;text-align:center;font-size:12.5px;font-weight:700;color:#2d6fd8;text-decoration:none;margin-top:9px}
 .card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px rgba(15,40,74,.07);display:flex;flex-direction:column;scroll-margin-top:16px;transition:box-shadow .3s}
@@ -90,13 +91,27 @@ header p{font-size:13px;opacity:.8;margin-top:4px}
 .acc button{border:0;background:none;padding:4px 0;font-size:11.5px;font-weight:700;color:var(--navy)}
 .acc a{font-size:11.5px;font-weight:700;color:#2d6fd8;text-decoration:none}
 .grid.uno .inf b.tt{-webkit-line-clamp:4;font-size:15px}
+
+/* Navidad (se activa sola del 1/11 al 6/1) */
+.lg{position:relative;display:inline-block}
+.gorro,.fiestas,.nieve{display:none}
+body.navidad .gorro{display:block;position:absolute;width:54px;top:-24px;right:-22px;transform:rotate(18deg);filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+body.navidad .fiestas{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:20px;background:rgba(201,164,92,.18);border:1px solid rgba(227,200,142,.5);color:var(--gold2);font-size:12px;font-weight:700;position:relative;z-index:1}
+body.navidad .nieve{display:block;position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.nieve i{position:absolute;top:-10px;color:#fff;font-style:normal;animation:cae linear infinite;opacity:.0}
+@keyframes cae{0%{transform:translateY(-10px) rotate(0);opacity:0}10%{opacity:.75}90%{opacity:.6}100%{transform:translateY(260px) rotate(200deg);opacity:0}}
+body.navidad header{background:linear-gradient(135deg,#0F284A,#163B66 60%,#1d4a3a)}
+body.navidad header h1,body.navidad header p,body.navidad .lg{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){.nieve{display:none!important}}
 </style>
 </head>
 <body>
 <header>
-  <img src="logo.png" alt="Pirí">
+  <div class="nieve" id="nieve"></div>
+  <div class="lg"><img src="logo.png" alt="Pirí"><svg class="gorro" viewBox="0 0 70 60" aria-hidden="true"><path d="M10 44 Q16 18 40 10 Q58 5 62 16 Q50 14 44 22 Q38 32 46 44 Z" fill="#C8102E"/><path d="M40 10 Q58 5 62 16 Q52 12 46 18 Z" fill="#9E0B22"/><rect x="4" y="40" width="48" height="13" rx="6.5" fill="#FBF7EE"/><circle cx="62" cy="17" r="7" fill="#FBF7EE"/></svg></div>
   <h1 id="tit">Pirí · Diseño Láser</h1>
   <p>Productos personalizados con grabado láser</p>
+  <div class="fiestas">🎄 Regalos para estas fiestas · Encargá con tiempo</div>
 </header>
 <div class="wrap">
   <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="¿Qué estás buscando?" oninput="pintar()"></div>
@@ -231,6 +246,15 @@ async function cargar() {
   }
 }
 window.addEventListener('hashchange', resaltar);
+// temporada de fiestas: gorro, cartel y nieve suave en el encabezado
+(function () {
+  const d = new Date(), m = d.getMonth() + 1, dia = d.getDate();
+  if (!(m === 11 || m === 12 || (m === 1 && dia <= 6))) return;
+  document.body.classList.add('navidad');
+  const n = document.getElementById('nieve'); let h = '';
+  for (let i = 0; i < 22; i++) h += `<i style="left:${Math.random() * 100}%;font-size:${6 + Math.random() * 8}px;animation-duration:${6 + Math.random() * 7}s;animation-delay:${-Math.random() * 12}s">${i % 3 ? '•' : '❄'}</i>`;
+  n.innerHTML = h;
+})();
 cargar();
 </script>
 </body>
