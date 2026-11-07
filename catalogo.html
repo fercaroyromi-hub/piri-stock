@@ -36,6 +36,10 @@ header p{font-size:13px;opacity:.8;margin-top:4px}
 @media(min-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
 .tag.gr{left:auto;right:10px;background:rgba(15,40,74,.85);color:#fff}
 .nfo{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.55);color:#fff;font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 8px}
+.shr{display:block;width:100%;margin-top:8px;padding:9px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-size:12.5px;font-weight:700;color:var(--navy)}
+.solo{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:14px;padding:12px 14px;margin:14px 0;box-shadow:0 4px 16px rgba(15,40,74,.07);font-size:13px;color:var(--muted)}
+.solo button{border:0;background:var(--navy);color:#fff;border-radius:10px;padding:9px 12px;font-weight:700;font-size:12.5px;white-space:nowrap}
+.grid.uno{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}
 .mlk{display:block;text-align:center;font-size:12.5px;font-weight:700;color:#2d6fd8;text-decoration:none;margin-top:9px}
 .card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px rgba(15,40,74,.07);display:flex;flex-direction:column;scroll-margin-top:16px;transition:box-shadow .3s}
 .card.hl{box-shadow:0 0 0 3px var(--gold),0 8px 24px rgba(15,40,74,.15)}
@@ -79,6 +83,7 @@ header p{font-size:13px;opacity:.8;margin-top:4px}
 <div class="wrap">
   <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="¿Qué estás buscando?" oninput="pintar()"></div>
   <div class="chips" id="chips"></div>
+  <div id="soloBar" hidden class="solo"><span>Te pasaron este producto</span><button onclick="verTodo()">Ver todo el catálogo ›</button></div>
   <div class="grid" id="grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
   <div class="foot">¿No encontrás lo que buscás? Escribinos y lo hacemos a tu medida.</div>
 </div>
@@ -120,13 +125,30 @@ function agrupar() {
     return x;
   }).sort((a, b) => (posCat(a.cat) - posCat(b.cat)) || a.nombre.localeCompare(b.nombre));
 }
+const BASE = location.origin + location.pathname;
+let SOLO = new URLSearchParams(location.search).get('p') || '';
+function verTodo() { SOLO = ''; history.replaceState(null, '', BASE); $('#soloBar').hidden = true; document.querySelector('.search').hidden = false; $('#chips').hidden = false; pintar(); window.scrollTo(0, 0); }
+async function compartirUno(id) {
+  const p = todos().find(x => x.id === id); if (!p) return;
+  const url = BASE + '?p=' + id;
+  const txt = `*${p.nombre}${p.color ? ' · ' + p.color : ''}*${p.precio ? ' — ' + pesos(p.precio) : ''}\nPirí · Diseño Láser 👇\n${url}`;
+  if (navigator.share) { try { await navigator.share({ text: txt }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
 function pintar() {
+  if (SOLO) {
+    const g = grupos.find(x => x.items.some(i => i.id === SOLO));
+    if (g) { elegido[g.id] = elegido[g.id] || SOLO; $('#soloBar').hidden = false; document.querySelector('.search').hidden = true; $('#chips').hidden = true; $('#grid').innerHTML = tarjeta(g); $('#grid').classList.add('uno'); return; }
+  }
+  $('#grid').classList.remove('uno');
   const cats = [...new Set(grupos.map(g => g.cat))].sort((a, b) => posCat(a) - posCat(b));
   $('#chips').innerHTML = ['', ...cats].map(c => `<button class="${c === cat ? 'on' : ''}" onclick="cat='${esc(c)}';pintar()">${c ? esc(c) : 'Todo'}</button>`).join('');
   const q = $('#q').value.trim().toLowerCase();
   const L = grupos.filter(g => (!cat || g.cat === cat) && (!q || (g.nombre + ' ' + g.cat + ' ' + g.items.map(i => i.color).join(' ')).toLowerCase().includes(q)));
   if (!L.length) { $('#grid').innerHTML = '<div class="vac" style="grid-column:1/-1">No encontramos eso. ¡Escribinos y te ayudamos!</div>'; return; }
-  $('#grid').innerHTML = L.map(g => {
+  $('#grid').innerHTML = L.map(tarjeta).join('');
+}
+function tarjeta(g) {
     const sel = g.items.find(i => i.id === elegido[g.id]) || g.items.find(i => i.disponible) || g.items[0];
     const fi = (sel.foto || sel.fotos) ? sel : (g.items.find(i => i.foto || i.fotos) || null);
     const ft = fi ? src(fi, 600) : '';
@@ -140,8 +162,8 @@ function pintar() {
         ${precio != null ? `<div class="pr">${pesos(precio)}</div>` : '<div class="pr c">Consultar precio</div>'}
         ${hayColor ? `<div class="cols">${g.items.map(i => `<button class="col ${i.id === sel.id ? 'on' : ''} ${i.disponible ? '' : 'ag'}" onclick="elegido['${g.id}']='${i.id}';pintar()">${esColor(i.color) ? `<i style="background:${colorCss(i.color)}"></i>` : ''}${esc(i.color || 'Único')}</button>`).join('')}</div>` : ''}
         <button class="wa" onclick="pedir('${sel.id}')">${ICON}${sel.disponible ? 'Lo quiero' : 'Consultar'}</button>
+        <button class="shr" onclick="compartirUno('${sel.id}')">🔗 Pasar este producto</button>
         ${sel.ml ? `<a class="mlk" href="${linkML(sel.id)}" target="_blank" rel="noopener">Ver en Mercado Libre ›</a>` : ''}</div></div>`;
-  }).join('');
 }
 const ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';
 function mensaje(id) {

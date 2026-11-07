@@ -221,6 +221,7 @@ textarea{resize:none;height:64px}
 .catbox .ct{display:flex;gap:12px;align-items:center;margin-bottom:12px}.catbox .ct>span{font-size:28px}
 .catbox b{display:block;font-size:15.5px}.catbox small{display:block;font-size:12px;opacity:.8;margin-top:2px}
 .catbox .row2{gap:10px}.catbox .row2 button{border:0;border-radius:12px;padding:11px 8px;font-weight:700;font-size:14px;background:rgba(255,255,255,.14);color:#fff}
+.catbox .uno{display:block;width:100%;margin-top:10px;border:1.5px solid rgba(255,255,255,.35);border-radius:12px;padding:10px;font-weight:700;font-size:14px;background:transparent;color:#fff}
 .catbox .row2 button.wa{background:#25D366;color:#073b1d}
 </style>
 </head>
@@ -421,7 +422,8 @@ function renderInicio() {
     <button class="kpi red" onclick="filtrarEstado('s')"><span>Sin stock</span><b>${sin}</b></button>
   </div>
   <div class="catbox"><div class="ct"><span>🛍️</span><div><b>Catálogo para clientes</b><small>Lo que ven tus clientes, con fotos, precios y pedido por WhatsApp</small></div></div>
-    <div class="row2"><button onclick="window.open(CAT_URL,'_blank')">👀 Ver catálogo</button><button class="wa" onclick="compartirCatalogo()">💬 Compartir</button></div></div>
+    <div class="row2"><button onclick="window.open(CAT_URL,'_blank')">👀 Ver catálogo</button><button class="wa" onclick="compartirCatalogo()">💬 Compartir</button></div>
+    <button class="uno" onclick="pasarProducto()">🔗 Pasar un solo producto</button></div>
   <button class="fact" onclick="abrirFactura()"><span>📷</span><div><b>Cargar una factura</b><small>Sacale una foto y se suma sola al stock con lo que te costó</small></div></button>
   ${sinCargar ? `<div class="card"><h3>Primer paso</h3><div style="font-size:14px;line-height:1.5">Contá lo que tenés de cada producto y cargalo. Después, cada compra la sumás con <b>Compré</b> o con la foto de la factura.</div><button class="btn-main" data-t="Empezar a contar" onclick="abrirConteoRapido()">Empezar a contar</button></div>` : ''}
   ${col.length ? `<div class="card pend"><h3>¿De qué color se vendió? <em style="color:var(--warn)">${col.length}</em></h3>
@@ -869,6 +871,26 @@ async function compartirProd(id) {
       if (navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], text: txt }); return; }
     } catch (e) { if (e && e.name === 'AbortError') return; }
   }
+  if (navigator.share) { try { await navigator.share({ text: txt }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
+// elegir un producto del catálogo (lo de Mercado Libre) y mandar su link solo
+let ML_CAT = null;
+async function pasarProducto() {
+  abrir(`<h2>Pasar un producto</h2><div class="sh-sub">Elegí cuál y se manda por WhatsApp con su foto y precio</div>
+  <div class="f"><input id="ppQ" placeholder="Buscar: Peñarol, termo, lapicera…" oninput="pintarPP()"></div><div id="ppL"><div class="vac">Cargando…</div></div>`);
+  try { if (!ML_CAT) ML_CAT = (await fetch('ml.json?v=' + Date.now()).then(r => r.json())).items || []; } catch (e) { $('#ppL').innerHTML = '<div class="vac">No se pudo cargar el catálogo</div>'; return; }
+  pintarPP();
+}
+function pintarPP() {
+  const q = ($('#ppQ').value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const L = ML_CAT.filter(x => !q || (x.nombre + ' ' + x.color + ' ' + x.cat).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q));
+  $('#ppL').innerHTML = L.length ? L.map(x => `<div class="li" onclick="mandarProducto('${x.id}')"><img src="${x.fotos[0]}" alt="" style="width:46px;height:46px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#fff"><div class="tx"><b>${esc(x.nombre)}</b><small>${x.color ? esc(x.color) + ' · ' : ''}${pesos(x.precio)}</small></div><span style="font-size:20px">💬</span></div>`).join('') : '<div class="vac">No encontré ese producto</div>';
+}
+async function mandarProducto(id) {
+  const x = ML_CAT.find(y => y.id === id); if (!x) return;
+  const url = new URL('catalogo.html', location.href).href + '?p=' + id;
+  const txt = `¡Hola! Te paso el producto 👇\n*${x.nombre}${x.color ? ' · ' + x.color : ''}* — ${pesos(x.precio)}\n${url}`;
   if (navigator.share) { try { await navigator.share({ text: txt }); return; } catch (e) { if (e.name === 'AbortError') return; } }
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
