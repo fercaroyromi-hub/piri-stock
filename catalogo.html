@@ -32,6 +32,9 @@ header p{font-size:13px;opacity:.8;margin-top:4px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
 @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
+.tag.gr{left:auto;right:10px;background:rgba(15,40,74,.85);color:#fff}
+.nfo{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.55);color:#fff;font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 8px}
+.mlk{display:block;text-align:center;font-size:12.5px;font-weight:700;color:#2d6fd8;text-decoration:none;margin-top:9px}
 .card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px rgba(15,40,74,.07);display:flex;flex-direction:column;scroll-margin-top:16px;transition:box-shadow .3s}
 .card.hl{box-shadow:0 0 0 3px var(--gold),0 8px 24px rgba(15,40,74,.15)}
 .ph{aspect-ratio:1;background:#fff;display:grid;place-items:center;position:relative;cursor:zoom-in}
@@ -79,7 +82,7 @@ header p{font-size:13px;opacity:.8;margin-top:4px}
 </div>
 <button class="fab" onclick="pedir()" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg></button>
 <div class="bg" id="bg" onclick="if(event.target===this)this.classList.remove('on')"><div class="sheet" id="sheet"></div></div>
-<div class="zoom" id="zoom" onclick="this.classList.remove('on')"><img id="zimg" alt=""></div>
+<div class="zoom" id="zoom" onclick="this.classList.remove('on')"><img id="zimg" alt="" onclick="zsig(event)"><div id="zcnt" style="position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#fff;font-size:13px;opacity:.85"></div></div>
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbxCyZEmU8_eqwXoPPWfVz4u1X6NGV-yWTRwROb2FHJ4CwRFjvTXbIqe0Y_qQ9cz71YI/exec';
 const $ = s => document.querySelector(s);
@@ -88,11 +91,21 @@ const pesos = n => '$ ' + Math.round(n).toLocaleString('es-UY');
 const foto = (id, w) => `https://lh3.googleusercontent.com/d/${id}=w${w}`;
 const COLS = { negro: '#1f1f1f', blanco: '#ffffff', rojo: '#d32f2f', azul: '#1e4fd8', celeste: '#5bb6f0', verde: '#2e9d57', rosa: '#f48fb1', fucsia: '#d81b80', violeta: '#7e57c2', lila: '#b39ddb', amarillo: '#fbc02d', naranja: '#f57c00', gris: '#9e9e9e', plateado: '#c0c0c0', plateada: '#c0c0c0', dorado: '#c9a45c', dorada: '#c9a45c', turquesa: '#26c6da', bordo: '#7b1f2b', beige: '#e8d9b5', marron: '#795548', crema: '#f3ead2' };
 const colorCss = c => { const k = String(c || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim(); return COLS[k] || COLS[k.split(' ')[0]] || 'linear-gradient(135deg,#f6c,#6cf,#fc6)'; };
-let D = { productos: [], whatsapp: [] }, grupos = [], cat = '', elegido = {};
+let D = { productos: [], whatsapp: [] }, grupos = [], cat = '', elegido = {}, ML = [];
+// fotos: las del stock vienen de Drive (id), las de Mercado Libre vienen con su dirección completa
+const src = (p, w) => p.fotos ? p.fotos[0] : foto(p.foto, w);
+const linkML = id => 'https://articulo.mercadolibre.com.uy/' + id.replace(/^MLU/, 'MLU-');
+async function cargarML() {
+  try {
+    const j = await fetch('ml.json?v=' + Date.now()).then(r => r.json());
+    ML = (j.items || []).map(x => ({ id: x.id, nombre: x.nombre, cat: x.cat, color: x.color || '', precio: x.precio, disponible: true, aPedido: !(x.stock > 0), stock: null, fotos: x.fotos || [], ml: true }));
+  } catch (e) { ML = []; }
+}
+const todos = () => (D.productos || []).concat(ML);
 
 function agrupar() {
   const g = {};
-  D.productos.forEach(p => { p.nombre = String(p.nombre || '').replace(/\s+/g, ' ').trim(); const k = p.cat + '|' + p.nombre; (g[k] = g[k] || { nombre: p.nombre, cat: p.cat, items: [] }).items.push(p); });
+  todos().forEach(p => { p.nombre = String(p.nombre || '').replace(/\s+/g, ' ').trim(); const k = p.cat + '|' + p.nombre; (g[k] = g[k] || { nombre: p.nombre, cat: p.cat, items: [] }).items.push(p); });
   grupos = Object.values(g).map(x => {
     x.items.sort((a, b) => (b.disponible - a.disponible) || String(a.color).localeCompare(String(b.color)));
     x.disp = x.items.some(i => i.disponible);
@@ -109,23 +122,26 @@ function pintar() {
   if (!L.length) { $('#grid').innerHTML = '<div class="vac" style="grid-column:1/-1">No encontramos eso. ¡Escribinos y te ayudamos!</div>'; return; }
   $('#grid').innerHTML = L.map(g => {
     const sel = g.items.find(i => i.id === elegido[g.id]) || g.items.find(i => i.disponible) || g.items[0];
-    const ft = sel.foto || (g.items.find(i => i.foto) || {}).foto;
+    const fi = (sel.foto || sel.fotos) ? sel : (g.items.find(i => i.foto || i.fotos) || null);
+    const ft = fi ? src(fi, 600) : '';
     const precio = sel.precio !== '' && sel.precio != null ? sel.precio : g.precios[0];
     const cant = sel.stock != null && sel.disponible ? ` · quedan ${sel.stock}` : '';
     const hayColor = g.items.length > 1 || sel.color;
     return `<div class="card" data-ids=",${g.items.map(i => i.id).join(',')},">
-      <div class="ph" onclick="${ft ? `zoom('${ft}')` : ''}">${ft ? `<img src="${foto(ft, 600)}" alt="${esc(g.nombre)}" loading="lazy">` : '<span class="sin">📦</span>'}
-        <span class="tag ${sel.disponible ? '' : 'no'}">${sel.disponible ? 'Disponible' + cant : 'Agotado'}</span></div>
+      <div class="ph" onclick="${ft ? `zoom('${fi.id}')` : ''}">${ft ? `<img src="${ft}" alt="${esc(g.nombre)}" loading="lazy">` : '<span class="sin">📦</span>'}
+        <span class="tag ${sel.disponible ? '' : 'no'}">${sel.ml ? (sel.aPedido ? 'A pedido' : 'Disponible') : sel.disponible ? 'Disponible' + cant : 'Agotado'}</span>${sel.ml ? '<span class="tag gr">✨ Grabado</span>' : ''}${fi && fi.fotos && fi.fotos.length > 1 ? `<span class="nfo">📷 ${fi.fotos.length}</span>` : ''}</div>
       <div class="inf"><b>${esc(g.nombre)}</b>
         ${precio != null ? `<div class="pr">${pesos(precio)}</div>` : '<div class="pr c">Consultar precio</div>'}
         ${hayColor ? `<div class="cols">${g.items.map(i => `<button class="col ${i.id === sel.id ? 'on' : ''} ${i.disponible ? '' : 'ag'}" onclick="elegido['${g.id}']='${i.id}';pintar()"><i style="background:${colorCss(i.color)}"></i>${esc(i.color || 'Único')}</button>`).join('')}</div>` : ''}
-        <button class="wa" onclick="pedir('${sel.id}')">${ICON}${sel.disponible ? 'Lo quiero' : 'Consultar'}</button></div></div>`;
+        <button class="wa" onclick="pedir('${sel.id}')">${ICON}${sel.disponible ? 'Lo quiero' : 'Consultar'}</button>
+        ${sel.ml ? `<a class="mlk" href="${linkML(sel.id)}" target="_blank" rel="noopener">Ver en Mercado Libre ›</a>` : ''}</div></div>`;
   }).join('');
 }
 const ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';
 function mensaje(id) {
-  const p = D.productos.find(x => x.id === id);
+  const p = todos().find(x => x.id === id);
   if (!p) return '¡Hola! Vi el catálogo y quería hacer una consulta 😊';
+  if (p.ml) return `¡Hola! Vi en el catálogo: *${p.nombre}${p.color ? ' · ' + p.color : ''}*${p.precio ? ' (' + pesos(p.precio) + ')' : ''}.\nMe interesa, ¿cómo hago el pedido con mi grabado?\n${linkML(p.id)}`;
   return `¡Hola! Vi en el catálogo: *${p.nombre}${p.color ? ' · ' + p.color : ''}*${p.precio ? ' (' + pesos(p.precio) + ')' : ''}.\n${p.disponible ? 'Me interesa, ¿cómo hago el pedido?' : '¿Cuándo vuelven a tener?'}`;
 }
 function pedir(id) {
@@ -136,7 +152,14 @@ function pedir(id) {
   $('#bg').classList.add('on');
 }
 function abrirWa(n, txt) { $('#bg').classList.remove('on'); window.open(`https://wa.me/${n}?text=${encodeURIComponent(txt)}`, '_blank'); }
-function zoom(id) { $('#zimg').src = foto(id, 1200); $('#zoom').classList.add('on'); }
+// zoom: con varias fotos, tocando la imagen pasa a la siguiente; tocando afuera se cierra
+let ZF = [], ZI = 0;
+function zoom(id) {
+  const p = todos().find(x => x.id === id); if (!p) return;
+  ZF = p.fotos && p.fotos.length ? p.fotos : [foto(p.foto, 1200)]; ZI = 0;
+  $('#zimg').src = ZF[0]; $('#zcnt').textContent = ZF.length > 1 ? `1 / ${ZF.length} · tocá la foto para ver la siguiente` : ''; $('#zoom').classList.add('on');
+}
+function zsig(e) { if (ZF.length < 2) return; e.stopPropagation(); ZI = (ZI + 1) % ZF.length; $('#zimg').src = ZF[ZI]; $('#zcnt').textContent = `${ZI + 1} / ${ZF.length} · tocá la foto para ver la siguiente`; }
 function resaltar() {
   const id = location.hash.slice(1); if (!id) return;
   const c = document.querySelector(`.card[data-ids*=",${CSS.escape(id)},"]`);
@@ -147,16 +170,18 @@ function resaltar() {
   }
 }
 async function cargar() {
+  const pML = cargarML();
   try {
     const c = localStorage.getItem('piri.cat'); if (c) { D = JSON.parse(c); agrupar(); pintar(); }
   } catch (e) {}
   try {
-    const r = await fetch(API + '?c=1'); const j = await r.json();
+    const r = await fetch(API + '?c=1'); const j = await r.json(); await pML;
     if (!j.ok) throw new Error(j.error);
     D = j; try { localStorage.setItem('piri.cat', JSON.stringify(j)); } catch (e) {}
     if (j.nombre) { $('#tit').textContent = j.nombre; document.title = 'Catálogo · ' + j.nombre; }
     agrupar(); pintar(); resaltar();
   } catch (e) {
+    await pML; if (ML.length) { agrupar(); pintar(); resaltar(); }
     if (!grupos.length) $('#grid').innerHTML = '<div class="vac" style="grid-column:1/-1">No pudimos cargar el catálogo. Revisá tu conexión y volvé a intentar.</div>';
   }
 }
