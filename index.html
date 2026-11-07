@@ -618,7 +618,7 @@ function abrirFoto(id) {
   const p = P(id); FP = { id };
   abrir(`<h2>📷 Foto profesional</h2><div class="sh-sub">${esc(nm(p))}</div>
   ${p.foto ? `<img class="fprev" src="${fotoUrl(p.foto, 800)}" alt="">` : ''}
-  <div class="prev" style="line-height:1.55">Sacala como te salga: la app <b>recorta el producto</b>, le pone <b>fondo blanco</b>, corrige <b>luz y colores</b> y la deja centrada con una sombra suave.<br><span style="color:var(--muted);font-size:12px">La primera vez descarga el recortador (unos 50 MB): mejor con wifi. Después funciona rápido.</span></div>
+  <div class="prev" style="line-height:1.55">Sacala como te salga: la app <b>recorta el producto</b>, le pone <b>fondo blanco</b>, corrige <b>luz y colores</b> y la deja centrada con una sombra suave.<br><span style="color:var(--muted);font-size:12px">La primera vez descarga el recortador (unos 90 MB): mejor con wifi. Después funciona rápido.</span></div>
   <label class="btn-main" style="display:block;text-align:center;cursor:pointer">🖼️ Elegir foto de la galería<input type="file" accept="image/*" hidden onchange="procesarFoto(this.files[0])"></label>
   <label class="btn-sec" style="display:block;text-align:center;cursor:pointer">📷 Sacar foto ahora<input type="file" accept="image/*" capture="environment" hidden onchange="procesarFoto(this.files[0])"></label>
   <div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center">Consejo: sacá la foto antes con la cámara del celular y después elegila de la galería. Así el celular no se queda sin memoria.</div>

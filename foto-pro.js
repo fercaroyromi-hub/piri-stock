@@ -7,9 +7,13 @@ const MARGEN = 0.12;         // aire alrededor del producto
 
 let _quitar = null;
 async function quitarFondo(blob, avance) {
+  try { return await recortar(blob, avance, 'medium'); }           // el de mejor calidad
+  catch (e) { console.warn('[fotoPro] medium falló, uso el liviano', e); return recortar(blob, avance, 'small'); }
+}
+async function recortar(blob, avance, modelo) {
   if (!_quitar) _quitar = (await import('./vendor/bgremoval.js')).removeBackground;
   return _quitar(blob, {
-    model: 'small',
+    model: modelo,
     output: { format: 'image/png', quality: 1 },
     progress: (k, hecho, total) => {
       if (!avance) return;
@@ -39,63 +43,53 @@ const aBlob = (c, tipo, q) => new Promise(ok => c.toBlob(ok, tipo, q));
 // ---------- corrección de luz y color (solo sobre el producto) ----------
 function percentil(hist, total, p) { let a = 0; for (let i = 0; i < 256; i++) { a += hist[i]; if (a >= total * p) return i; } return 255; }
 function mejorar(c) {
+  // Corrección SUAVE: la foto del celular suele estar bien; solo emparejamos luz y sacamos el tinte de la lámpara.
   const x = c.getContext('2d', { willReadFrequently: true }), d = x.getImageData(0, 0, c.width, c.height), a = d.data;
-  const H = [new Uint32Array(256), new Uint32Array(256), new Uint32Array(256)], L = new Uint32Array(256);
-  let n = 0;
+  const L = new Uint32Array(256);
+  let n = 0, gr = 0, gg = 0, gb = 0, gn = 0;
   for (let i = 0; i < a.length; i += 4) {
     if (a[i + 3] < 200) continue;
-    const r = a[i], g = a[i + 1], b = a[i + 2];
-    H[0][r]++; H[1][g]++; H[2][b]++; L[(r * 77 + g * 150 + b * 29) >> 8]++;
-    n++;
+    const r = a[i], g = a[i + 1], b = a[i + 2], l = (r * 77 + g * 150 + b * 29) >> 8;
+    L[l]++; n++;
+    if (Math.max(r, g, b) - Math.min(r, g, b) < 40 && l > 60 && l < 245) { gr += r; gg += g; gb += b; gn++; } // zonas grises/neutras
   }
   if (n < 50) return c;
-  // 1) balance de blancos: las zonas más claras del producto (reflejos, partes blancas) deberían ser neutras
-  const lim = percentil(L, n, 0.9);
-  let br = 0, bg = 0, bb = 0, bn = 0;
-  for (let i = 0; i < a.length; i += 4) {
-    if (a[i + 3] < 200) continue;
-    const r = a[i], g = a[i + 1], b = a[i + 2];
-    if (((r * 77 + g * 150 + b * 29) >> 8) < lim) continue;
-    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
-    if (mx - mn > 70) continue; // ignorar colores fuertes (un escudo rojo no es "luz")
-    br += r; bg += g; bb += b; bn++;
-  }
+  // 1) balance de blancos con las zonas neutras (metal, blanco, gris): saca el tinte amarillo/azul de la luz
   let wb = [1, 1, 1];
-  if (bn > 30) {
-    const mm = (br + bg + bb) / 3;
-    wb = [br, bg, bb].map(s => Math.max(0.86, Math.min(1.18, 1 + (mm / s - 1) * 0.9)));
+  // promedio general del producto
+  let ar = 0, ag = 0, ab = 0;
+  for (let i = 0; i < a.length; i += 16) if (a[i + 3] >= 200) { ar += a[i]; ag += a[i + 1]; ab += a[i + 2]; }
+  const am = (ar + ag + ab) / 3, gw = [am / ar, am / ag, am / ab];
+  // ¿el producto es "sin color" (plateado, acero, blanco, negro)? → se mide la saturación ya sin el tinte de la luz
+  let sat = 0, cnt = 0;
+  for (let i = 0; i < a.length; i += 16) {
+    if (a[i + 3] < 200) continue;
+    const r = a[i] * gw[0], g = a[i + 1] * gw[1], b = a[i + 2] * gw[2];
+    sat += Math.max(r, g, b) - Math.min(r, g, b); cnt++;
   }
-  // si el producto es casi sin color (plateado, blanco, negro, acero), neutralizar del todo el tinte de la luz
-  let sr = 0, sg = 0, sb = 0, sat = 0;
-  for (let i = 0; i < a.length; i += 16) { if (a[i + 3] < 200) continue; const r = a[i] * wb[0], g = a[i + 1] * wb[1], b = a[i + 2] * wb[2]; sr += r; sg += g; sb += b; sat += Math.max(r, g, b) - Math.min(r, g, b); }
-  const tot = sr + sg + sb, cnt = n / 4;
-  if (tot > 0 && sat / Math.max(1, cnt) < 38) {
-    const m3 = tot / 3; wb = wb.map((v, k) => v * Math.max(0.85, Math.min(1.18, m3 / [sr, sg, sb][k])));
+  if (cnt && sat / cnt < 28) wb = gw.map(v => Math.max(0.75, Math.min(1.35, v)));           // neutro: tinte fuera del todo
+  else if (gn > n * 0.05) { const m = (gr + gg + gb) / 3; wb = [gr, gg, gb].map(s => Math.max(0.9, Math.min(1.1, 1 + (m / s - 1) * 0.8))); }
+  // 2) luz: si está oscura se aclara; los blancos se llevan a casi blanco sin quemar
+  const p1 = percentil(L, n, 0.01), p99 = percentil(L, n, 0.995), med = percentil(L, n, 0.5);
+  const lo = Math.min(p1 * 0.5, 40), hi = Math.max(Math.min(p99, 252), lo + 80);
+  // sobre fondo blanco el producto tiene que verse luminoso: llevar la luz media a ~58 %
+  const rel = Math.max(0.05, Math.min(0.95, (med - lo) / (hi - lo)));
+  const expo = rel < 0.56 ? Math.max(0.55, Math.log(0.58) / Math.log(rel)) : 1; // < 1 aclara los medios tonos
+  const T = new Float32Array(256);
+  for (let v = 0; v < 256; v++) {
+    let y = Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
+    y = Math.pow(y, expo);
+    y = y + 0.05 * Math.sin(Math.PI * (y - 0.5)) * (1 - Math.abs(2 * y - 1)); // contraste muy suave
+    T[v] = Math.max(0, Math.min(255, y * 255));
   }
-  // 2) niveles: estirar negros y blancos (sin quemar)
-  const lo0 = Math.min(...H.map(h => percentil(h, n, 0.004))), hi0 = Math.max(...H.map(h => percentil(h, n, 0.996)));
-  const lo = [lo0, lo0, lo0], hi = [hi0, hi0, hi0]; // mismos niveles en los 3 canales: no cambia el color, solo la luz
-  // 3) exposición: llevar la luz media a un valor agradable
-  const med = percentil(L, n, 0.5);
-  const gamma = Math.max(0.7, Math.min(1.35, Math.log(0.56) / Math.log(Math.max(0.05, Math.min(0.95, med / 255)))));
-  const T = [0, 1, 2].map(ch => {
-    const t = new Uint8ClampedArray(256), l = lo[ch], h = Math.max(l + 30, hi[ch]);
-    for (let v = 0; v < 256; v++) {
-      let y = Math.max(0, Math.min(1, (v * wb[ch] - l * 0.85) / (h - l * 0.85)));
-      y = Math.pow(y, 1 / gamma);
-      y = y + 0.12 * Math.sin(Math.PI * (y - 0.5)) * (1 - Math.abs(2 * y - 1)); // contraste suave (curva S)
-      t[v] = Math.round(Math.max(0, Math.min(1, y)) * 255);
-    }
-    return t;
-  });
   for (let i = 0; i < a.length; i += 4) {
     if (a[i + 3] === 0) continue;
-    let r = T[0][a[i]], g = T[1][a[i + 1]], b = T[2][a[i + 2]];
-    const gr = (r + g + b) / 3, s = 1.1; // un poquito más de color
-    a[i] = gr + (r - gr) * s; a[i + 1] = gr + (g - gr) * s; a[i + 2] = gr + (b - gr) * s;
+    const r = Math.min(255, a[i] * wb[0]), g = Math.min(255, a[i + 1] * wb[1]), b = Math.min(255, a[i + 2] * wb[2]);
+    const r2 = T[r | 0], g2 = T[g | 0], b2 = T[b | 0], m = (r2 + g2 + b2) / 3, s = 1.05;
+    a[i] = m + (r2 - m) * s; a[i + 1] = m + (g2 - m) * s; a[i + 2] = m + (b2 - m) * s;
   }
   x.putImageData(d, 0, 0);
-  return enfocar(c, 0.45);
+  return enfocar(c, 0.3);
 }
 // nitidez (máscara de enfoque)
 function enfocar(c, k) {
