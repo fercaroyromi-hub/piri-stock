@@ -217,6 +217,11 @@ textarea{resize:none;height:64px}
 .appbar:has(#btnAtras:not([hidden])) .t small{display:none}
 .set .li .ic{background:var(--soft);color:var(--ink)}
 @media(min-width:700px){.view,.appbar{max-width:640px;margin:0 auto}.appbar{border-radius:0 0 18px 18px}.nav,.sheet{max-width:640px;margin:0 auto}}
+.catbox{background:linear-gradient(135deg,#0F284A,#1B3B66);color:#fff;border-radius:18px;padding:15px;margin:14px 0}
+.catbox .ct{display:flex;gap:12px;align-items:center;margin-bottom:12px}.catbox .ct>span{font-size:28px}
+.catbox b{display:block;font-size:15.5px}.catbox small{display:block;font-size:12px;opacity:.8;margin-top:2px}
+.catbox .row2{gap:10px}.catbox .row2 button{border:0;border-radius:12px;padding:11px 8px;font-weight:700;font-size:14px;background:rgba(255,255,255,.14);color:#fff}
+.catbox .row2 button.wa{background:#25D366;color:#073b1d}
 </style>
 </head>
 <body>
@@ -415,6 +420,8 @@ function renderInicio() {
     <button class="kpi warn" onclick="filtrarEstado('r')"><span>Reponer</span><b>${rep}</b></button>
     <button class="kpi red" onclick="filtrarEstado('s')"><span>Sin stock</span><b>${sin}</b></button>
   </div>
+  <div class="catbox"><div class="ct"><span>🛍️</span><div><b>Catálogo para clientes</b><small>Lo que ven tus clientes, con fotos, precios y pedido por WhatsApp</small></div></div>
+    <div class="row2"><button onclick="window.open(CAT_URL,'_blank')">👀 Ver catálogo</button><button class="wa" onclick="compartirCatalogo()">💬 Compartir</button></div></div>
   <button class="fact" onclick="abrirFactura()"><span>📷</span><div><b>Cargar una factura</b><small>Sacale una foto y se suma sola al stock con lo que te costó</small></div></button>
   ${sinCargar ? `<div class="card"><h3>Primer paso</h3><div style="font-size:14px;line-height:1.5">Contá lo que tenés de cada producto y cargalo. Después, cada compra la sumás con <b>Compré</b> o con la foto de la factura.</div><button class="btn-main" data-t="Empezar a contar" onclick="abrirConteoRapido()">Empezar a contar</button></div>` : ''}
   ${col.length ? `<div class="card pend"><h3>¿De qué color se vendió? <em style="color:var(--warn)">${col.length}</em></h3>
