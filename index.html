@@ -208,6 +208,11 @@ textarea{resize:none;height:64px}
 .fprev{display:block;width:100%;max-width:420px;aspect-ratio:1;object-fit:contain;margin:0 auto 12px;border-radius:16px;background:#fff;border:1px solid var(--line)}
 .chk{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px;font-weight:600;color:var(--txt)}
 .chk input{width:22px;height:22px;accent-color:var(--navy3)}
+.shbar{position:sticky;top:-10px;z-index:2;display:flex;justify-content:space-between;align-items:center;margin:-10px -18px 8px;padding:10px 14px 8px;background:var(--card);border-bottom:1px solid var(--line)}
+.shbar .volver{border:0;background:var(--soft);color:var(--ink);font-weight:700;font-size:15px;padding:9px 14px;border-radius:12px}
+.shbar .cx{border:0;background:var(--soft);color:var(--muted);width:38px;height:38px;border-radius:50%;font-size:16px;font-weight:700}
+.hb.atras{margin-right:-2px}
+.appbar:has(#btnAtras:not([hidden])) .t small{display:none}
 .set .li .ic{background:var(--soft);color:var(--ink)}
 @media(min-width:700px){.view,.appbar{max-width:640px;margin:0 auto}.appbar{border-radius:0 0 18px 18px}.nav,.sheet{max-width:640px;margin:0 auto}}
 </style>
@@ -231,7 +236,8 @@ textarea{resize:none;height:64px}
 </div>
 
 <header class="appbar">
-  <div class="logo"><img src="logo.png" alt=""></div>
+  <button class="hb atras" id="btnAtras" onclick="ir('vInicio')" aria-label="Volver al inicio" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <div class="logo" onclick="ir('vInicio')" style="cursor:pointer"><img src="logo.png" alt=""></div>
   <div class="t"><small>Pirí · Diseño Láser</small><h1 id="titulo">Stock</h1></div>
   <button class="hb" id="btnTema" onclick="tema()" aria-label="Tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
   <button class="hb" id="btnRef" onclick="refrescar()" aria-label="Actualizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg></button>
@@ -338,7 +344,23 @@ function salir() { S.pin = ''; LS.set('piri.stock.pin', ''); $('#ovWho').hidden 
 
 /* ---------- navegación ---------- */
 const TIT = { vInicio: 'Stock', vStock: 'Mis productos', vHist: 'Historial', vCompras: 'Compras y gastos', vAjustes: 'Ajustes' };
-function ir(v) { S.vista = v; $$('main>section').forEach(s => s.hidden = s.id !== v); $$('.nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v)); $('#titulo').textContent = TIT[v]; scrollTo(0, 0); render(); }
+// ---- volver atrás: botón de la app y flecha "atrás" del celular ----
+let pila = [], hSheet = 0, hTab = 0, ignorar = 0;
+function ir(v, sinHist) {
+  if (!sinHist) {
+    if (v !== 'vInicio' && S.vista === 'vInicio' && !hTab) { history.pushState({ t: 1 }, ''); hTab = 1; }
+    if (v === 'vInicio' && hTab) { ignorar++; history.back(); hTab = 0; }
+  }
+  if (sheetAbierta()) cerrar();
+  irSolo(v);
+}
+const sheetAbierta = () => $('#sh').classList.contains('on');
+window.addEventListener('popstate', () => {
+  if (ignorar > 0) { ignorar--; return; }
+  if (sheetAbierta()) { hSheet = Math.max(0, hSheet - 1); volverSheet(true); return; }
+  if (S.vista !== 'vInicio') { hTab = 0; irSolo('vInicio'); }
+});
+function irSolo(v) { S.vista = v; $('#btnAtras').hidden = v === 'vInicio'; $$('main>section').forEach(s => s.hidden = s.id !== v); $$('.nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v)); $('#titulo').textContent = TIT[v]; scrollTo(0, 0); render(); }
 
 /* ---------- render ---------- */
 function render() {
@@ -460,8 +482,28 @@ function renderAjustes() {
 }
 
 /* ---------- hojas ---------- */
-function abrir(html) { $('#shC').innerHTML = html; $('#shBg').classList.add('on'); $('#sh').classList.add('on'); $('#sh').scrollTop = 0; }
-function cerrar() { $('#shBg').classList.remove('on'); $('#sh').classList.remove('on'); }
+function pintarSheet(html) {
+  $('#shC').innerHTML = `<div class="shbar"><button class="volver" onclick="volverSheet()">‹ ${pila.length ? 'Volver' : 'Cerrar'}</button><button class="cx" onclick="cerrar()" aria-label="Cerrar">✕</button></div>` + html;
+  $('#sh').scrollTop = 0;
+}
+function abrir(html) {
+  if (sheetAbierta()) pila.push($('#shC').innerHTML.replace(/^<div class="shbar">.*?<\/div>/, ''));
+  else pila = [];
+  history.pushState({ s: 1 }, ''); hSheet++;
+  pintarSheet(html);
+  $('#shBg').classList.add('on'); $('#sh').classList.add('on');
+}
+// desde el botón "Volver": vuelve a la ventana anterior o cierra
+function volverSheet(desdeCelular) {
+  if (!desdeCelular && hSheet > 0) { ignorar++; history.back(); hSheet--; }
+  if (pila.length) pintarSheet(pila.pop());
+  else cerrarSolo();
+}
+function cerrarSolo() { $('#shBg').classList.remove('on'); $('#sh').classList.remove('on'); pila = []; }
+function cerrar() {
+  cerrarSolo();
+  if (hSheet > 0) { ignorar++; history.go(-hSheet); hSheet = 0; }
+}
 const stepper = (id, v) => `<div class="stepper"><button type="button" onclick="paso('${id}',-1)">−</button><input id="${id}" type="number" inputmode="decimal" min="0" value="${v}" oninput="prevMov()"><button type="button" onclick="paso('${id}',1)">+</button></div>`;
 function paso(id, d) { const e = $('#' + id); e.value = Math.max(0, (Number(e.value) || 0) + d); prevMov(); }
 const optsProd = sel => S.productos.slice().sort((a, b) => a.cat.localeCompare(b.cat) || nm(a).localeCompare(nm(b))).map(p => `<option value="P:${p.id}" ${sel === 'P:' + p.id ? 'selected' : ''}>${esc(nm(p))} (${num(p.stock)})</option>`).join('');
