@@ -250,6 +250,19 @@
    ]
   },
   {
+   "id": "MLU703785675",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico 900 ml One Piece Luffy",
+   "color": "Rosa con tapa gris",
+   "precio": 799,
+   "stock": 1,
+   "fotos": [
+    "https://raw.githubusercontent.com/fercaroyromi-hub/piri-stock/main/img/vaso_900_rosa_tapa_gris.jpg",
+    "https://http2.mlstatic.com/D_759398-MLU109177631038_042026-O.jpg",
+    "https://http2.mlstatic.com/D_802115-MLU109179677352_042026-O.jpg"
+   ]
+  },
+  {
    "id": "MLU694796867",
    "cat": "Vasos térmicos",
    "nombre": "Vaso térmico Uruguay Mundial 2026 · 800 ml",
