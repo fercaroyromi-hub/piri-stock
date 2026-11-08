@@ -168,6 +168,7 @@ textarea{resize:none;height:64px}
 .pad button{width:72px;height:72px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:#fff;font-size:26px;font-weight:600}
 .pad button:active{background:rgba(255,255,255,.25)}
 .pad button.x{background:none;font-size:20px}
+.pad button.ok{background:var(--gold);color:#0F284A;font-size:24px}
 .who{display:grid;gap:12px;width:100%;max-width:320px;margin-top:22px}
 .who button{padding:18px;border-radius:16px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;gap:12px}
 .who button i{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#0F284A;display:grid;place-items:center;font-style:normal;font-weight:800}
@@ -233,7 +234,7 @@ textarea{resize:none;height:64px}
   <div class="lg"><img src="logo.png" alt=""></div>
   <h2>Pirí Stock</h2>
   <p id="pinMsg">Ingresá tu PIN</p>
-  <div class="dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+  <div class="dots" id="pinDots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="pad" id="pad"></div>
 </div>
 <div class="ov" id="ovWho" hidden>
@@ -320,7 +321,7 @@ async function api(action, data = {}) {
     catch (e) { throw new Error('Sin conexión a internet'); }
     let j; try { j = await r.json(); } catch (e) { throw new Error('No se pudo leer la planilla'); }
     if (!j.ok) throw new Error(j.error || 'Error');
-    Object.assign(S, { productos: limpiarNombres(j.productos), kits: j.kits, movimientos: j.movimientos, pendientes: j.pendientes, usuarios: j.usuarios, alias: j.alias || {}, facturas: j.facturas || [], compras: j.compras || [], gastos: j.gastos || [], config: j.config || {} });
+    Object.assign(S, { productos: limpiarNombres(j.productos), kits: j.kits, movimientos: j.movimientos, pendientes: j.pendientes, usuarios: j.usuarios, alias: j.alias || {}, facturas: j.facturas || [], compras: j.compras || [], gastos: j.gastos || [], config: j.config || {}, version: j.version || 1 });
     LS.set('piri.stock.cache', JSON.stringify(j));
     render();
     return j;
@@ -341,19 +342,21 @@ async function enviar(action, data, ok) {
 
 /* ---------- PIN ---------- */
 let pinBuf = '';
-$('#pad').innerHTML = ['1','2','3','4','5','6','7','8','9','','0','⌫'].map(k => k === '' ? '<span></span>' : `<button class="${k === '⌫' ? 'x' : ''}" onclick="pinKey('${k}')">${k}</button>`).join('');
+// El PIN puede ser de 4 a 6 números: entra solo al llegar al largo que se usó la última vez, o al tocar ✓
+$('#pad').innerHTML = ['1','2','3','4','5','6','7','8','9','⌫','0','✓'].map(k => `<button class="${k === '⌫' ? 'x' : k === '✓' ? 'ok' : ''}" onclick="pinKey('${k}')" aria-label="${k === '⌫' ? 'Borrar' : k === '✓' ? 'Entrar' : k}">${k}</button>`).join('');
 function pinKey(k) {
-  if (k === '⌫') pinBuf = pinBuf.slice(0, -1); else if (pinBuf.length < 4) pinBuf += k;
+  if (k === '✓') { if (pinBuf.length >= 4) entrar(); return; }
+  if (k === '⌫') pinBuf = pinBuf.slice(0, -1); else if (pinBuf.length < 6) pinBuf += k;
   $$('#pinDots i').forEach((d, i) => d.classList.toggle('on', i < pinBuf.length));
-  if (pinBuf.length === 4) entrar();
+  if (pinBuf.length === 6 || pinBuf.length === Number(LS.get('piri.stock.pinLen'))) entrar();
 }
 async function entrar() {
   S.pin = pinBuf; $('#pinMsg').textContent = 'Verificando…';
   try {
-    await api('init'); LS.set('piri.stock.pin', S.pin); $('#ovPin').hidden = true; $('#pinMsg').textContent = 'Ingresá tu PIN';
+    await api('init'); LS.set('piri.stock.pin', S.pin); LS.set('piri.stock.pinLen', String(S.pin.length)); $('#ovPin').hidden = true; $('#pinMsg').textContent = 'Ingresá tu PIN';
     if (!S.usuarios.includes(S.usuario)) abrirWho();
   } catch (e) {
-    S.pin = ''; $('#pinMsg').textContent = e.message;
+    S.pin = ''; LS.set('piri.stock.pinLen', ''); $('#pinMsg').textContent = e.message;
     const d = $('#pinDots'); d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake');
   }
   pinBuf = ''; $$('#pinDots i').forEach(d => d.classList.remove('on'));
@@ -363,7 +366,7 @@ function abrirWho() {
   $('#ovWho').hidden = false;
 }
 function elegirUser(v) { S.usuario = v; LS.set('piri.stock.user', v); $('#ovWho').hidden = true; render(); toast('Hola, ' + v + ' 👋'); }
-function salir() { S.pin = ''; LS.set('piri.stock.pin', ''); $('#ovWho').hidden = true; $('#ovPin').hidden = false; }
+function salir() { S.pin = ''; LS.set('piri.stock.pin', ''); LS.set('piri.stock.pinLen', ''); $('#ovWho').hidden = true; $('#ovPin').hidden = false; }
 
 /* ---------- navegación ---------- */
 const TIT = { vInicio: 'Stock', vStock: 'Mis productos', vHist: 'Historial', vCompras: 'Compras y gastos', vAjustes: 'Ajustes' };
@@ -512,8 +515,21 @@ function renderAjustes() {
     <button class="add" onclick="abrirKit()">+ Nuevo kit</button></div>
   <div class="card"><h3>Sesión</h3>
     <div class="li" onclick="abrirWho()"><div class="ic">${esc((S.usuario || '?')[0])}</div><div class="tx"><b>Cambiar de usuario</b><small>Ahora: ${esc(S.usuario)}</small></div></div>
+    ${S.version >= 2 ? `<div class="li" onclick="abrirCambiarPin()"><div class="ic">🔒</div><div class="tx"><b>Cambiar PIN</b><small>El mismo PIN para todos los que usan la app</small></div><span style="color:var(--muted)">›</span></div>` : ""}
     <div class="li" onclick="salir()"><div class="ic">⎋</div><div class="tx"><b>Cerrar sesión</b><small>Pide el PIN de nuevo</small></div></div></div>
-  <div class="vac" style="font-size:11.5px">Las ventas de la app Pirí Ventas se descuentan solas. El PIN y los usuarios se cambian en la planilla, pestaña Config.</div>`;
+  <div class="vac" style="font-size:11.5px">Las ventas de la app Pirí Ventas se descuentan solas. Los usuarios se cambian en la planilla, pestaña Config.</div>`;
+}
+function abrirCambiarPin() {
+  const campo = (id, t) => `<div class="f"><label>${t}</label><input id="${id}" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></div>`;
+  abrir(`<h2>Cambiar PIN</h2><div class="sh-sub">Elegí 6 números que no sean fáciles de adivinar (nada de 123456 ni 111111). Después pasáselo a quien también use la app: en su celular le va a pedir el PIN nuevo.</div>
+  ${campo('pA', 'PIN actual')}${campo('pN', 'PIN nuevo (6 números)')}${campo('pR', 'Repetí el PIN nuevo')}
+  <button class="btn-main" data-t="Cambiar PIN" onclick="guardarPin()">Cambiar PIN</button>`);
+}
+async function guardarPin() {
+  const a = $('#pA').value.trim(), n = $('#pN').value.trim(), rep = $('#pR').value.trim();
+  if (!/^\d{6}$/.test(n)) return toast('El PIN nuevo tiene que tener 6 números', true);
+  if (n !== rep) return toast('Los dos PIN nuevos no coinciden', true);
+  if (await enviar('pin', { actual: a, nuevo: n }, '✓ PIN cambiado')) { S.pin = n; LS.set('piri.stock.pin', n); LS.set('piri.stock.pinLen', '6'); }
 }
 
 /* ---------- hojas ---------- */
