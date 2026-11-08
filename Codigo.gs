@@ -188,7 +188,8 @@ function estado(cfg) {
     config: { whatsapp: cfg.whatsapp, nombreCat: cfg.nombreCat, mostrarCant: cfg.mostrarCant },
     productos: P, kits: kits(), usuarios: cfg.usuarios, alias: aliasFactura(), facturas: F, compras: compras, gastos: gastos,
     movimientos: M.slice(-500).reverse(),
-    pendientes: pendientesDirectas(cfg, P)
+    pendientes: pendientesDirectas(cfg, P),
+    version: 2 // 2 = sabe cambiar el PIN
   };
 }
 

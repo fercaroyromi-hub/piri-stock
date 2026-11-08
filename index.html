@@ -321,7 +321,7 @@ async function api(action, data = {}) {
     catch (e) { throw new Error('Sin conexión a internet'); }
     let j; try { j = await r.json(); } catch (e) { throw new Error('No se pudo leer la planilla'); }
     if (!j.ok) throw new Error(j.error || 'Error');
-    Object.assign(S, { productos: limpiarNombres(j.productos), kits: j.kits, movimientos: j.movimientos, pendientes: j.pendientes, usuarios: j.usuarios, alias: j.alias || {}, facturas: j.facturas || [], compras: j.compras || [], gastos: j.gastos || [], config: j.config || {} });
+    Object.assign(S, { productos: limpiarNombres(j.productos), kits: j.kits, movimientos: j.movimientos, pendientes: j.pendientes, usuarios: j.usuarios, alias: j.alias || {}, facturas: j.facturas || [], compras: j.compras || [], gastos: j.gastos || [], config: j.config || {}, version: j.version || 1 });
     LS.set('piri.stock.cache', JSON.stringify(j));
     render();
     return j;
@@ -515,7 +515,7 @@ function renderAjustes() {
     <button class="add" onclick="abrirKit()">+ Nuevo kit</button></div>
   <div class="card"><h3>Sesión</h3>
     <div class="li" onclick="abrirWho()"><div class="ic">${esc((S.usuario || '?')[0])}</div><div class="tx"><b>Cambiar de usuario</b><small>Ahora: ${esc(S.usuario)}</small></div></div>
-    <div class="li" onclick="abrirCambiarPin()"><div class="ic">🔒</div><div class="tx"><b>Cambiar PIN</b><small>El mismo PIN para todos los que usan la app</small></div><span style="color:var(--muted)">›</span></div>
+    ${S.version >= 2 ? `<div class="li" onclick="abrirCambiarPin()"><div class="ic">🔒</div><div class="tx"><b>Cambiar PIN</b><small>El mismo PIN para todos los que usan la app</small></div><span style="color:var(--muted)">›</span></div>` : ""}
     <div class="li" onclick="salir()"><div class="ic">⎋</div><div class="tx"><b>Cerrar sesión</b><small>Pide el PIN de nuevo</small></div></div></div>
   <div class="vac" style="font-size:11.5px">Las ventas de la app Pirí Ventas se descuentan solas. Los usuarios se cambian en la planilla, pestaña Config.</div>`;
 }
