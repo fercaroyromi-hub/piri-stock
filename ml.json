@@ -227,11 +227,24 @@
    "id": "MLU1279933790",
    "cat": "Vasos térmicos",
    "nombre": "Vaso térmico 900 ml One Piece Luffy",
-   "color": "",
+   "color": "Negro",
    "precio": 799,
    "stock": 3,
    "fotos": [
     "https://http2.mlstatic.com/D_932616-MLU116634485584_092026-O.jpg",
+    "https://http2.mlstatic.com/D_759398-MLU109177631038_042026-O.jpg",
+    "https://http2.mlstatic.com/D_802115-MLU109179677352_042026-O.jpg"
+   ]
+  },
+  {
+   "id": "MLU703785591",
+   "cat": "Vasos térmicos",
+   "nombre": "Vaso térmico 900 ml One Piece Luffy",
+   "color": "Rosa",
+   "precio": 799,
+   "stock": 7,
+   "fotos": [
+    "https://http2.mlstatic.com/D_905806-MLU119327241378_112026-O.jpg",
     "https://http2.mlstatic.com/D_759398-MLU109177631038_042026-O.jpg",
     "https://http2.mlstatic.com/D_802115-MLU109179677352_042026-O.jpg"
    ]
