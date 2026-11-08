@@ -29,7 +29,7 @@ function doPost(e) {
   try {
     const d = JSON.parse(e.postData.contents || '{}');
     const cfg = leerConfig();
-    if (String(d.pin || '') !== cfg.pin) throw new Error('PIN incorrecto');
+    revisarPin(d.pin, cfg);
     const u = String(d.usuario || '').trim() || '—';
     const lock = LockService.getScriptLock();
     lock.waitLock(25000);
@@ -52,6 +52,7 @@ function doPost(e) {
         case 'costo': ponerCostoMov(d); break;
         case 'foto': guardarFoto(d); break;
         case 'config': guardarConfig(d); break;
+        case 'pin': cambiarPin(d, cfg); break;
         default: throw new Error('Acción desconocida');
       }
       SpreadsheetApp.flush();
@@ -61,6 +62,31 @@ function doPost(e) {
     out = { ok: false, error: err.message };
   }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ---------- PIN ---------- */
+// Después de 5 PIN equivocados seguidos, la app queda bloqueada 15 minutos (frena a quien quiera adivinarlo)
+const MAX_FALLOS = 5, BLOQUEO_SEG = 15 * 60;
+function revisarPin(pin, cfg) {
+  const cache = CacheService.getScriptCache();
+  const fallos = Number(cache.get('pinFallos') || 0);
+  if (fallos >= MAX_FALLOS) throw new Error('Demasiados intentos. Probá de nuevo en 15 minutos');
+  if (!cfg.pin || String(pin || '') !== cfg.pin) {
+    cache.put('pinFallos', String(fallos + 1), BLOQUEO_SEG);
+    throw new Error('PIN incorrecto');
+  }
+  if (fallos) cache.remove('pinFallos');
+}
+function cambiarPin(d, cfg) {
+  if (String(d.actual || '') !== cfg.pin) throw new Error('El PIN actual no es correcto');
+  const n = String(d.nuevo || '').trim();
+  if (!/^\d{6}$/.test(n)) throw new Error('El PIN nuevo tiene que tener 6 números');
+  if (/^(\d)\1+$/.test(n) || '01234567890'.indexOf(n) >= 0 || '09876543210'.indexOf(n) >= 0) throw new Error('Ese PIN es muy fácil de adivinar, elegí otro');
+  const sh = hoja('Config'), F = filas('Config');
+  const i = F.findIndex(r => String(r[0]).trim() === 'PIN');
+  const fila = i >= 0 ? i + 2 : sh.getLastRow() + 1;
+  sh.getRange(fila, 1).setValue('PIN');
+  sh.getRange(fila, 2).setNumberFormat('@').setValue(n); // como texto, para no perder un 0 adelante
 }
 
 /* ---------- lectura ---------- */
@@ -248,7 +274,10 @@ function crearProducto(x) {
   sh.getRange(r, 1, 1, 12).setValues([[id, nombre, String(x.cat || 'Otros').trim(), String(x.unidad || 'unidades').trim(), Number(x.min) || 0,
     x.costo === '' || x.costo == null ? '' : Number(x.costo), '', '', color,
     x.precio === '' || x.precio == null ? '' : Number(x.precio), '', x.catalogo === false ? 'No' : '']]);
-  sh.getRange(r, 7, 1, 2).setFormulas([['=SUMIFS(Movimientos!G:G,Movimientos!E:E,A' + r + ')',
+  // Copia las fórmulas de Stock actual y Estado de la primera fila: así funcionan con el idioma de la planilla
+  const modelo = sh.getRange(2, 7, 1, 2);
+  if (r > 2 && modelo.getFormula()) modelo.copyTo(sh.getRange(r, 7, 1, 2));
+  else sh.getRange(r, 7, 1, 2).setFormulas([['=SUMIFS(Movimientos!G:G,Movimientos!E:E,A' + r + ')',
     '=IF(G' + r + '<=0,"Sin stock",IF(G' + r + '<=E' + r + ',"Reponer","OK"))']]);
   return id;
 }
